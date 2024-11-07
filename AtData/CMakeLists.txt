@@ -33,6 +33,7 @@ set(SRCS
   AtHitCluster.cxx
   AtHitClusterFull.cxx
   AtEvent.cxx
+  AtHitClusterEvent.cxx
   AtProtoEvent.cxx
   AtProtoEventAna.cxx
   AtTrackingEvent.cxx

@@ -1,4 +1,4 @@
-void reconstruct(int runNumber = 210)
+void reconstruct_n_cluster(int runNumber = 210)
 {
    // Load the library for unpacking and reconstruction
    gSystem->Load("libAtReconstruction.so");
@@ -15,7 +15,7 @@ void reconstruct(int runNumber = 210)
 
    // Set the in/out files
    TString inputFile = inputDir + "merg_005.root";
-   TString outputFile = outDir + "test_map.root";
+   TString outputFile = outDir + "test_cluster.root";
 
    // Set the mapping for the TPC
    TString mapFile = "e12014_pad_mapping.xml"; //"Lookup20150611.xml";
@@ -52,7 +52,7 @@ void reconstruct(int runNumber = 210)
    fAtMapPtr->ParseXMLMap(mapDir.Data());
    fAtMapPtr->GeneratePadPlane();
 
-   auto *parser = new AtMAGNEXParsingTask(inputFile, planeMapFile, parPadFileName, "AtEventH");
+   auto *parser = new AtMAGNEXParserAndClusterTask(inputFile, planeMapFile, parPadFileName, "AtHitClusterEventH");
    parser->SetPersistence(kTRUE);
 
    /*auto sac = std::make_unique<SampleConsensus::AtSampleConsensus>(
@@ -60,7 +60,7 @@ void reconstruct(int runNumber = 210)
    auto sacTask = new AtSampleConsensusTask(std::move(sac));
    sacTask->SetPersistence(true);*/
 
-   AtRansacTask *ransacTask = new AtRansacTask();
+  /* AtRansacTask *ransacTask = new AtRansacTask();
    ransacTask->SetPersistence(kTRUE);
    ransacTask->SetVerbose(kTRUE);
    ransacTask->SetDistanceThreshold(5.0);
@@ -70,10 +70,11 @@ void reconstruct(int runNumber = 210)
    ransacTask->SetRanSamMode(
       0); // SampleMethod { kUniform = 0, kChargeWeighted = 1, kGaussian = 2, kWeightedGaussian = 3, kWeightedY = 4 };
    ransacTask->SetChargeThreshold(0);
+*/
 
    run->AddTask(parser);
    // run->AddTask(sacTask);
-   run->AddTask(ransacTask);
+   //run->AddTask(ransacTask);
 
    std::cout << "***** Starting Init ******" << std::endl;
    run->Init();

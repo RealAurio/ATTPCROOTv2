@@ -7,15 +7,22 @@
 #include <FairRootManager.h> // for FairRootManager
 
 #include <TObject.h> // for TObject
+#include <Math/Point2D.h>
 
 #include <H5Cpp.h>
 
 #include <utility> // for move
 
-AtMAGNEXParsingTask::AtMAGNEXParsingTask(TString fileName, TString mapFileName, TString outputBranchName)
+#include "AtMAGNEXMap.h"
+
+using XYPoint = ROOT::Math::XYPoint;
+
+AtMAGNEXParsingTask::AtMAGNEXParsingTask(TString fileName, TString mapFileName, TString parFileName, TString outputBranchName)
    : fInputFileName(std::move(fileName)), fInputMapFileName(std::move(mapFileName)),
      fOutputBranchName(std::move(outputBranchName)), fEventArray("AtEvent", 1)
 {
+   fMap = new AtMAGNEXMap(parFileName);
+   fMap->GeneratePadPlane();
 }
 
 InitStatus AtMAGNEXParsingTask::Init()
@@ -96,14 +103,24 @@ void AtMAGNEXParsingTask::Exec(Option_t *opt)
 
    // First hit
    auto pad = fPadMap->find(Channel)->second;
-   Double_t x = 2.5 + 5 * pad;
-   Double_t y = FTS; // Needs calibration
-   Double_t z = Row * 21.2 + 18.60;
-   auto &fhit = event->AddHit(hitNum, AtHit::XYZPoint(x, y, z), Charge_cal);
-   fhit.SetHitID(hitNum);
-   fhit.SetPadNum(pad);
-   fhit.SetTimeStamp(FTS);
-   ++hitNum;
+
+   Double_t x{}, y{}, z{};
+
+/*
+   if (pad < fMap->GetColNum()) {
+      XYPoint point = fMap->CalcPadCenter(fMap->PadID(pad, Row));
+      Double_t x = point.X();
+      Double_t z = point.Y();
+      //Double_t x = 2.5 + 5 * pad;
+      Double_t y = FTS; // Needs calibration
+      //Double_t z = Row * 21.2 + 18.60;
+      auto &fhit = event->AddHit(hitNum, AtHit::XYZPoint(x, y, z), Charge_cal);
+      fhit.SetHitID(hitNum);
+      fhit.SetPadNum(pad);
+      fhit.SetTimeStamp(FTS);
+      ++hitNum;
+   }
+*/
 
    // std::cout<<fhit.GetHitID()<<" "<<fhit.GetPadNum()<<" "<<fhit.GetTimeStamp()<<" "<<fhit.GetCharge()<<"
    // "<<fEntryNum<<"\n";
@@ -119,14 +136,20 @@ void AtMAGNEXParsingTask::Exec(Option_t *opt)
       }
 
       pad = fPadMap->find(Channel)->second;
-      x = 2.5 + 5 * pad;
-      y = FTS; // Needs calibration
-      z = Row * 21.2 + 18.60;
-      auto &hit = event->AddHit(hitNum, AtHit::XYZPoint(x, 0, z), Charge_cal);
-      hit.SetHitID(hitNum);
-      hit.SetPadNum(pad);
-      hit.SetTimeStamp(FTS);
-      ++hitNum;
+
+      if (pad < fMap->GetColNum()) {
+         XYPoint point = fMap->CalcPadCenter(fMap->PadID(pad, Row));
+         Double_t x = point.X();
+         Double_t z = point.Y();
+         //x = 2.5 + 5 * pad;
+         y = FTS; // Needs calibration
+         //z = Row * 21.2 + 18.60;
+         auto &hit = event->AddHit(hitNum, AtHit::XYZPoint(x, 0, z), Charge_cal);
+         hit.SetHitID(hitNum);
+         hit.SetPadNum(pad);
+         hit.SetTimeStamp(FTS);
+         ++hitNum;
+      }
 
       // std::cout<<hit.GetHitID()<<" "<<hit.GetPadNum()<<" "<<hit.GetTimeStamp()<<" "<<hit.GetCharge()<<"
       // "<<fEntryNum<<"\n";
