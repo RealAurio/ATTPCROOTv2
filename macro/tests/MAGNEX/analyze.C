@@ -7,8 +7,8 @@ void analyze(int runNumber = 210)
    timer.Start();
 
    // Set the input/output directories
-   TString inputDir = "/home/yassid/Desktop/NUMEN_data/";
-   TString outDir = "./";
+   TString inputDir = "/home/aurio/research/NUMEN/NUMEN_data/";
+   TString outDir = "/home/aurio/research/NUMEN/NUMEN_output/";
 
    // Set the in/out files
    TString inputFile = inputDir + "merg_005.root";
