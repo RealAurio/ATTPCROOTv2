@@ -167,7 +167,7 @@ void AtTabMain::DrawPadPlane()
    fPadPlane = AtViewerManager::Instance()->GetMap()->GetPadPlane();
    fPadPlane->SetBit(TH1::kNoTitle);
    fCvsPadPlane->cd();
-   fPadPlane->Draw("COL L0");
+   fPadPlane->Draw("COL L");
    fPadPlane->SetMinimum(1.0);
    gStyle->SetOptStat(0);
    gStyle->SetPalette(103);
@@ -276,12 +276,21 @@ void AtTabMain::UpdatePadPlane()
    }
    auto &hits = fEvent->GetHits();
 
+   TString plane = AtViewerManager::Instance()->GetMap()->GetPadPlanePlane();
+
    for (auto &hit : hits) {
       int padMultiHit = GetFairRootInfo<AtEvent>()->GetHitPadMult(hit->GetPadNum());
       if (hit->GetCharge() < fThreshold || padMultiHit > fMaxHitMulti)
          continue;
       auto position = hit->GetPosition();
-      fPadPlane->Fill(position.X(), position.Y(), hit->GetCharge());
+
+      if (plane == "XY") {
+         fPadPlane->Fill(position.X(), position.Y(), hit->GetCharge());
+      } else if (plane == "XZ") {
+         fPadPlane->Fill(position.X(), position.Z(), hit->GetCharge());
+      } else if (plane == "YZ") {
+         fPadPlane->Fill(position.Y(), position.Z(), hit->GetCharge());
+      }
    }
 
    fCvsPadPlane->Modified();
