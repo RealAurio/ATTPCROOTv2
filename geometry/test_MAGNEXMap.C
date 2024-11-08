@@ -1,12 +1,11 @@
 void test_MAGNEXMap()
 {
 
-   TString mapFile = "/home/aurio/research/NUMEN/NUMEN_data/channel2pad_2.txt";
    TString parFile = "/home/aurio/research/NUMEN/NUMEN_data/testParFile.txt";
 
 
    gSystem->Load("libAtTpcMap.so");
-   AtMAGNEXMap *magnex = new AtMAGNEXMap(parFile, mapFile);
+   AtMAGNEXMap *magnex = new AtMAGNEXMap(parFile);
    magnex->GeneratePadPlane();
 
    TH2Poly *padplane = magnex->GetPadPlane();

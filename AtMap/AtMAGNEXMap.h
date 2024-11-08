@@ -16,7 +16,7 @@
 class AtMAGNEXMap : public AtMap {
 
 public:
-   AtMAGNEXMap(TString pathToPadDefinitionFile, TString pathToMapFile);
+   AtMAGNEXMap(TString pathToPadDefinitionFile);
    ~AtMAGNEXMap();
 
    void Dump() override;                                          // Pure virtual
@@ -25,15 +25,12 @@ public:
    Int_t BinToPad(Int_t binval) override {return binval;};        // Pure virtual
 
    void SetPadParameters(TString pathToPadDefinitionFile);
-   //void SetChannelToStripMap(TString pathToMapFile);
 
 private:
-   Int_t PadID(Int_t StripID, Int_t MTHGEMID);
+   Int_t PadID(Int_t iCol, Int_t iRow);
 
    Int_t fColNum, fRowNum;
    Double_t fColWidth, fRowWidth, fRowSeparation, fRowStart;
-
-   //std::unordered_map<Int_t, Int_t> fChannelToStripTable;
 
    ClassDefOverride(AtMAGNEXMap, 1);
 };

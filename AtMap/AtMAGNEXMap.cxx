@@ -18,16 +18,13 @@
 
 using XYPoint = ROOT::Math::XYPoint;
 
-AtMAGNEXMap::AtMAGNEXMap(TString pathToPadDefinitionFile, TString pathToMapFile) : AtMap()
+AtMAGNEXMap::AtMAGNEXMap(TString pathToPadDefinitionFile) : AtMap()
 {
    SetPadParameters(pathToPadDefinitionFile);
    AtPadCoord.resize(boost::extents[fNumberPads][4][2]);
    std::cout << " MAGNEX Map initialized. " << std::endl;
    std::fill(AtPadCoord.data(), AtPadCoord.data() + AtPadCoord.num_elements(), 0);
    std::cout << " MAGNEX Pad Coordinates container initialized. " << std::endl;
-   //SetChannelToStripMap(pathToMapFile);
-
-
 }
 
 AtMAGNEXMap::~AtMAGNEXMap() = default;
@@ -128,48 +125,6 @@ void AtMAGNEXMap::SetPadParameters(TString pathToPadDefinitionFile)
       return;
    }
 }
-
-
-/*
-   The following function sets the mapping from electronic channel of the MAGNEX daq to its corresponding strip.
-   Inputs: + TString pathToMapFile: the path of the file that contains the mapping in a format of two columns,
-                                    being the first one for the electronic channel value and the second one
-                                    for the corresponding strip.
-   Returns: nothing.
-   Status: I need to rethink this.
-*/
-
-/*
-void AtMAGNEXMap::SetChannelToStripMap(TString pathToMapFile) // ?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
-{
-   try {
-   std::ifstream file;
-   file.open(pathToMapFile.Data());
-
-   std::cout << "Opened " << pathToMapFile.Data() << std::endl;
-
-   while (!file.eof()) {
-         std::string line;
-         std::getline(file, line);
-
-         Int_t channel = 0, pad = 0;
-
-         std::istringstream isxs(line);
-         isxs >> channel >> pad;
-
-         std::cout << "Strip " << pad << " - Channel " << channel << std::endl;
-
-         fChannelToStripTable.emplace(channel, pad);
-      }
-
-   std::cout << "Finished setting the channel to pad map." << std::endl;
-
-   } catch (...) {
-      LOG(error) << " AtMAGNEXMap::SetChannelToPadMap Error : " << pathToMapFile.Data() << " does not exist, could not be opened or some other error appeared while reading it.";
-      return;
-   }
-}
-*/
 
 /*
    The following function simply maps the column and row to the corresponding PadID.
