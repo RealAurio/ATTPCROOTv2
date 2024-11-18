@@ -15,12 +15,13 @@ void reconstruct(int runNumber = 210)
 
    // Set the in/out files
    TString inputFile = inputDir + "merg_005.root";
-   TString outputFile = outDir + "test.root";
+   TString outputFile = outDir + "test_map.root";
 
    // Set the mapping for the TPC
    TString mapFile = "e12014_pad_mapping.xml"; //"Lookup20150611.xml";
    TString parameterFile = "ATTPC.e12014.par";
    TString planeMapFile = inputDir + "channel2pad_2.txt";
+   TString parPadFileName = "/home/aurio/research/NUMEN/NUMEN_data/testParFile.txt";
 
    // Set directories
    TString dir = gSystem->Getenv("VMCWORKDIR");
@@ -51,7 +52,7 @@ void reconstruct(int runNumber = 210)
    fAtMapPtr->ParseXMLMap(mapDir.Data());
    fAtMapPtr->GeneratePadPlane();
 
-   auto *parser = new AtMAGNEXParsingTask(inputFile, planeMapFile, "AtEventH");
+   auto *parser = new AtMAGNEXParsingTask(inputFile, planeMapFile, parPadFileName, "AtEventH");
    parser->SetPersistence(kTRUE);
 
    /*auto sac = std::make_unique<SampleConsensus::AtSampleConsensus>(

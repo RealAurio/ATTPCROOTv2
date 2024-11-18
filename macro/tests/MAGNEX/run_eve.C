@@ -1,7 +1,7 @@
 
 void run_eve()
 {
-   TString InputDataPath = "/home/aurio/research/NUMEN/NUMEN_output/test.root";
+   TString InputDataPath = "/home/aurio/research/NUMEN/NUMEN_output/test_map.root";
    TString OutputDataPath = "/home/aurio/research/NUMEN/NUMEN_output/output.reco_display.root";
    std::cout << "Opening: " << InputDataPath << std::endl;
 

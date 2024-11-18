@@ -12,6 +12,8 @@
 
 #include <memory> // for unique_ptr
 
+#include "AtMAGNEXMap.h"
+
 class TBuffer;
 class TClass;
 class TMemberInspector;
@@ -46,8 +48,10 @@ protected:
    UShort_t Row;
    UShort_t Section;
 
+   AtMAGNEXMap *fMap;
+
 public:
-   AtMAGNEXParsingTask(TString fileName, TString mapFileName, TString outputBranchName = "AtEventH");
+   AtMAGNEXParsingTask(TString fileName, TString mapFileName, TString parFileName, TString outputBranchName = "AtEventH");
 
    void SetPersistence(bool val) { fIsPersistence = val; }
 

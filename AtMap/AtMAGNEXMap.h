@@ -26,9 +26,11 @@ public:
 
    void SetPadParameters(TString pathToPadDefinitionFile);
 
-private:
    Int_t PadID(Int_t iCol, Int_t iRow);
+   Int_t GetColNum() {return fColNum;};
+   Int_t GetRowNum() {return fRowNum;};
 
+private:
    Int_t fColNum, fRowNum;
    Double_t fColWidth, fRowWidth, fRowSeparation, fRowStart;
 
