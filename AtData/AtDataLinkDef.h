@@ -22,8 +22,10 @@
 #pragma link C++ class AtRawEvent + ;
 #pragma link C++ class AtHit + ;
 #pragma link C++ class AtHitCluster + ;
+#pragma link C++ class AtHitClusterFull + ;
 #pragma link C++ struct AtHit::MCSimPoint + ;
 #pragma link C++ class AtEvent + ;
+#pragma link C++ class AtHitClusterEvent + ;
 #pragma link C++ class AtProtoEvent + ;
 #pragma link C++ class AtProtoEventAna + ;
 #pragma link C++ class AtPatternEvent + ;
