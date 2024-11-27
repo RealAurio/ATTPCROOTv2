@@ -44,9 +44,6 @@ protected:
    std::vector<TEvePointSetPtr> fPatternHitSets;
    std::vector<TEveElement> fPatterns;
 
-   TEveEventManagerPtr fEveHitClusterEvent{std::make_unique<TEveEventManager>("AtHitClusterEvent")}; // Folder for the AtHitClusterFulls in each entry.
-   std::vector<TEvePointSetPtr> fHitClusterSets;
-
    Int_t fThreshold{0};    //< Min charge to draw hit
    Int_t fMaxHitMulti{10}; //< Max hits in a pad for hit to be drawn
 
@@ -61,7 +58,6 @@ protected:
    DataHandling::AtBranch *fEventBranch;
    DataHandling::AtBranch *fRawEventBranch;
    DataHandling::AtBranch *fPatternEventBranch;
-   DataHandling::AtBranch *fHitClusterEventBranch;
    DataHandling::AtTreeEntry *fEntry;
 
 public:
@@ -105,7 +101,6 @@ private:
    void UpdatePadPlane();
    void UpdateEventElements();
    void UpdatePatternEventElements();
-   void UpdateHitClusterEventElements();
 
    void ExpandNumPatterns(int num);
 
