@@ -48,6 +48,8 @@ public:
 
    virtual void AddHit(const AtHit &hit) override;
 
+   const std::vector<AtHit> &GetHits() const { return fHits; }
+
    XYZPoint GetPositionUnWeighted() const;
    TMatrixDSym GetCovMatrixFull() const;
    TMatrixDSym GetCovMatrixCharge() const;

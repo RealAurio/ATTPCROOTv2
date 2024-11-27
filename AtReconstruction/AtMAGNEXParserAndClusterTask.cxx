@@ -113,7 +113,10 @@ void AtMAGNEXParserAndClusterTask::Exec(Option_t *opt)
       fInputTree->GetEntry(fEntryNum);
       if (Timestamp - timeinit > fWindowSize)
          break;
-      entriesByRow[Row].push_back(fEntryNum++);
+      Int_t Col = fChannelToColMap->find(Channel)->second;
+      if (Col < fMap->GetColNum())
+         entriesByRow[Row].push_back(fEntryNum);
+      ++fEntryNum;
    }
 
    Int_t hitNum{0}, clusterNum{0};
@@ -125,6 +128,8 @@ void AtMAGNEXParserAndClusterTask::Exec(Option_t *opt)
       hitCluster->SetClusterID(clusterNum++);
 
       for (ULong64_t entry : entriesByRow[i]) {
+         fInputTree->GetEntry(entry);
+
          Int_t Col = fChannelToColMap->find(Channel)->second;
 
          XYPoint point = fMap->CalcPadCenter(fMap->PadID(Col, Row));

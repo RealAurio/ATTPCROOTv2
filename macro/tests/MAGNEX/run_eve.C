@@ -30,7 +30,8 @@ void run_eve()
    std::cout << "Current PadPlane plane: " << fMap->GetPadPlanePlane() << "." << std::endl;
    AtViewerManager *eveMan = new AtViewerManager(fMap);
 
-   auto tabMain = std::make_unique<AtTabMain>();
+   auto tabMain = std::make_unique<AtTabMAGNEX>();
+   //auto tabMain = std::make_unique<AtTabMain>();
    tabMain->SetMultiHit(100);
 
    eveMan->AddTab(std::move(tabMain));
