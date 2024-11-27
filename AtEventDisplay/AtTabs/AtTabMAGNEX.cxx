@@ -56,7 +56,7 @@ void AtTabMAGNEX::UpdateHitClusterEventElements()
 
    auto fHitClusterEvent = GetFairRootInfo<AtHitClusterEvent>();
    if (fHitClusterEvent == nullptr) {
-      LOG(info) << "Cannot update AtHitClusterEvent elements: no event available";
+      LOG(debug) << "Cannot update AtHitClusterEvent elements: no event available";
       return;
    }
    LOG(info) << "Hello there.";
