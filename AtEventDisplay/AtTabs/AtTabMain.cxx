@@ -2,6 +2,7 @@
 
 #include "AtContainerManip.h" // for GetPointerVector
 #include "AtEvent.h"          // for AtEvent, AtEvent::HitVector
+#include "AtHitClusterEvent.h"// for AtHitClusterEvent
 #include "AtHit.h"            // for AtHit, AtHit::XYZPoint
 #include "AtMap.h"            // for AtMap
 #include "AtPad.h"            // for AtPad
@@ -76,6 +77,9 @@ AtTabMain::AtTabMain() : AtTabBase("Main")
    fPatternEventBranch = &AtViewerManager::Instance()->GetPatternEventBranch();
    fPatternEventBranch->Attach(this);
 
+   fHitClusterEventBranch = &AtViewerManager::Instance()->GetHitClusterEventBranch();
+   fHitClusterEventBranch->Attach(this);
+
    fEntry = &AtViewerManager::Instance()->GetCurrentEntry();
    fEntry->Attach(this);
 };
@@ -86,6 +90,7 @@ AtTabMain::~AtTabMain()
    fEventBranch->Detach(this);
    fRawEventBranch->Detach(this);
    fPatternEventBranch->Detach(this);
+   fHitClusterEventBranch->Detach(this);
    fEntry->Detach(this);
 }
 
@@ -98,9 +103,12 @@ void AtTabMain::InitTab()
 
    gEve->AddEvent(fEvePatternEvent.get());
 
+   gEve->AddEvent(fEveHitClusterEvent.get());
+
    fTabInfo->AddAugment(std::make_unique<AtTabInfoFairRoot<AtEvent>>(*fEventBranch));
    fTabInfo->AddAugment(std::make_unique<AtTabInfoFairRoot<AtRawEvent>>(*fRawEventBranch));
    fTabInfo->AddAugment(std::make_unique<AtTabInfoFairRoot<AtPatternEvent>>(*fPatternEventBranch));
+   fTabInfo->AddAugment(std::make_unique<AtTabInfoFairRoot<AtHitClusterEvent>>(*fHitClusterEventBranch));
 
    gStyle->SetPalette(55);
 
@@ -148,6 +156,9 @@ void AtTabMain::Update(DataHandling::AtSubject *sub)
    }
    if (sub == fRawEventBranch || sub == fEntry || sub == fPadNum) {
       DrawWave(fPadNum->Get());
+   }
+   if (sub == fEntry) {
+      UpdateHitClusterEventElements();
    }
 
    // If we should update the 3D display
@@ -207,6 +218,21 @@ void AtTabMain::UpdateRenderState()
 {
    fEveEvent->SetRnrState(true);
    fEvePatternEvent->SetRnrState(false);
+   fEveHitClusterEvent->SetRnrState(false);
+}
+
+void AtTabMain::UpdateHitClusterEventElements()
+{
+   if (fEveHitClusterEvent == nullptr)
+      return;
+
+   auto fHitClusterEvent = GetFairRootInfo<AtHitClusterEvent>();
+   if (fHitClusterEvent == nullptr) {
+      LOG(info) << "Cannot update AtHitClusterEvent elements: no event available";
+      return;
+   }
+   LOG(info) << "Hello there.";
+
 }
 
 void AtTabMain::UpdatePatternEventElements()
@@ -216,7 +242,7 @@ void AtTabMain::UpdatePatternEventElements()
 
    auto fPatternEvent = GetFairRootInfo<AtPatternEvent>();
    if (fPatternEvent == nullptr) {
-      LOG(debug) << "Cannot update AtPatternEvent elements: no event availible";
+      LOG(debug) << "Cannot update AtPatternEvent elements: no event available";
       return;
    }
 
@@ -249,7 +275,7 @@ void AtTabMain::UpdateEventElements()
 {
    auto fEvent = GetFairRootInfo<AtEvent>();
    if (fEvent == nullptr) {
-      LOG(debug) << "Cannot update AtEvent elements: no event availible";
+      LOG(debug) << "Cannot update AtEvent elements: no event available";
       return;
    }
 
@@ -271,7 +297,7 @@ void AtTabMain::UpdatePadPlane()
 
    auto fEvent = GetFairRootInfo<AtEvent>();
    if (fEvent == nullptr) {
-      LOG(debug) << "Cannot fill pad plane histogram: no event availible";
+      LOG(debug) << "Cannot fill pad plane histogram: no event available";
       return;
    }
    auto &hits = fEvent->GetHits();
