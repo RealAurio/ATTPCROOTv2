@@ -68,7 +68,6 @@ set(SRCS
   AtFilter/AtFilterFPN.cxx
   AtFilter/AtSCACorrect.cxx
 
-  AtMAGNEXParsingTask.cxx
   AtMAGNEXParserAndClusterTask.cxx
   AtPSAtask.cxx
   AtFilterTask.cxx
@@ -86,6 +85,7 @@ set(SRCS
   AtPatternRecognition/AtSampleEstimator.cxx
   AtPatternRecognition/AtEstimatorMethods.cxx
   AtRansacTask.cxx
+  AtMAGNEXRansacTask.cxx
   AtSampleConsensusTask.cxx
   AtPRAtask.cxx
   AtCopyTreeTask.cxx
