@@ -26,8 +26,8 @@
 using XYPoint = ROOT::Math::XYPoint;
 using XYZPoint = ROOT::Math::XYZPoint;
 
-AtMAGNEXParserAndClusterTask::AtMAGNEXParserAndClusterTask(TString inputFileName, TString channelToColMapFileName, TString detParFileName, TString outputBranchName)
-   : fInputFileName(std::move(inputFileName)), fOutputBranchName(std::move(outputBranchName)),
+AtMAGNEXParserAndClusterTask::AtMAGNEXParserAndClusterTask(TString inputFileName, TString SiCFileName, TString channelToColMapFileName, TString detParFileName, TString outputBranchName)
+   : fInputFileName(std::move(inputFileName)), fSiCFileName(std::move(SiCFileName)), fOutputBranchName(std::move(outputBranchName)),
      fChannelToColMapFileName(std::move(channelToColMapFileName)), fDetectorParametersFileName(std::move(detParFileName)),
      fEventArray("AtHitClusterEvent", 1)
 {
@@ -35,6 +35,7 @@ AtMAGNEXParserAndClusterTask::AtMAGNEXParserAndClusterTask(TString inputFileName
 
 InitStatus AtMAGNEXParserAndClusterTask::Init()
 {
+   // Find RootManager and register the output branch.
    FairRootManager *ioMan = FairRootManager::Instance();
    if (ioMan == nullptr) {
       LOG(error) << "AtMAGNEXParserAndClusterTask::Init Error : Could not find RootManager!";
@@ -42,6 +43,7 @@ InitStatus AtMAGNEXParserAndClusterTask::Init()
    }
    ioMan->Register(fOutputBranchName, "MAGNEX", &fEventArray, fIsPersistence);
 
+   // Open the data file containing the TPC related data and set up its TTree.
    fInputFile = std::make_unique<TFile>(fInputFileName, "READ");
    if (fInputFile->IsZombie()) {
       LOG(error) << "AtMAGNEXParserAndClusterTask::Init Error : Could not open ROOT file " << fInputFileName << "!";
@@ -64,6 +66,27 @@ InitStatus AtMAGNEXParserAndClusterTask::Init()
    fInputTree->SetBranchAddress("Row", &Row);
    fInputTree->SetBranchAddress("Section", &Section);
 
+   // Open the data file containing the SiC related data and set up its TTree.
+   fSiCFile = std::make_unique<TFile>(fSiCFileName, "READ");
+   if (fSiCFile->IsZombie()) {
+      LOG(error) << "AtMAGNEXParserAndClusterTask::Init Error : Could not open ROOT file " << fSiCFileName << "!";
+      return kERROR;
+   } else {
+      LOG(info) << "ROOT file " << fSiCFileName << " opened successfully.";
+   }
+
+   fSiCTree = (TTree *)fSiCFile->Get("Data_R");
+   LOG(info) << "Total number of entries in the tree: " << fSiCTree->GetEntries() << ".";
+   fSiCTree->SetBranchAddress("Board", &Board_SiC);
+   fSiCTree->SetBranchAddress("Channel", &Channel_SiC);
+   fSiCTree->SetBranchAddress("FineTSInt", &FTS_SiC);
+   fSiCTree->SetBranchAddress("CoarseTSInt", &CTS_SiC);
+   fSiCTree->SetBranchAddress("Timestamp", &Timestamp_SiC);
+   fSiCTree->SetBranchAddress("Charge", &Charge_SiC);
+   fSiCTree->SetBranchAddress("Flags", &Flags_SiC);
+   fSiCTree->SetBranchAddress("Charge_cal", &Charge_cal_SiC);
+
+   // Set the mapping from electronic channel to column (strip).
    fChannelToColMapFile = std::make_unique<std::ifstream>(fChannelToColMapFileName);
    fChannelToColMap = std::make_unique<std::map<Int_t, Int_t>>();
    if (!fChannelToColMapFile->is_open()) {
@@ -88,6 +111,7 @@ InitStatus AtMAGNEXParserAndClusterTask::Init()
       }
    }
 
+   // Set the AtMAGNEXMap.
    fMap = new AtMAGNEXMap(fDetectorParametersFileName);
    fMap->GeneratePadPlane();
 
@@ -97,11 +121,28 @@ InitStatus AtMAGNEXParserAndClusterTask::Init()
 void AtMAGNEXParserAndClusterTask::Exec(Option_t *opt)
 {
    fInputTree->GetEntry(fEntryNum);
-   ULong64_t timeinit = Timestamp;
+   Long64_t timeinit = Timestamp;
 
    auto *event = dynamic_cast<AtHitClusterEvent *>(fEventArray.ConstructedAt(0, "C"));
    event->SetEventID(fEventNum++);
    event->SetTimestamp(timeinit);
+
+   std::vector<ULong64_t> SiC_entries;
+
+   //fSiCEntryNum = 0;
+   while (fSiCEntryNum < fSiCTree->GetEntries()) {
+      fSiCTree->GetEntry(fSiCEntryNum);
+      LOG(info) << "TS: " << timeinit << " TSSiC: " << Timestamp_SiC - fSiCDelay;
+      if (Timestamp_SiC - fSiCDelay < timeinit) {
+         LOG(info) << "Hi";
+         ++fSiCEntryNum;
+         continue;
+      }
+      if (Timestamp_SiC - fSiCDelay - timeinit > fWindowSize)
+         break;
+      {LOG(info) << "Event: " << fEventNum << " SiC: " << fSiCEntryNum; SiC_entries.push_back(fSiCEntryNum);}
+      ++fSiCEntryNum;
+   }
 
    std::vector<std::vector<ULong64_t>> entriesByRow;
    for (Int_t i = 0; i < fMap->GetRowNum(); ++i) {
@@ -134,10 +175,10 @@ void AtMAGNEXParserAndClusterTask::Exec(Option_t *opt)
 
          XYPoint point = fMap->CalcPadCenter(fMap->PadID(Col, Row));
          Double_t x = point.X();
-         Double_t y = FTS;               // Still needs calibration.
+         Double_t y = fVDrift * (Timestamp - timeinit) * f_ps_to_us * 10.; // First approach to calibration.
          Double_t z = point.Y();
 
-         AtHit *hit = new AtHit(hitNum++, fMap->PadID(Col, Row), XYZPoint(x, 0, z), Charge);
+         AtHit *hit = new AtHit(hitNum++, fMap->PadID(Col, Row), XYZPoint(x, y, z), Charge);
          hit->SetTimeStamp(FTS);
 
          hitCluster->AddHit(*hit);
@@ -145,7 +186,7 @@ void AtMAGNEXParserAndClusterTask::Exec(Option_t *opt)
       event->AddHitCluster(hitCluster);
    }
 
-   LOG(info) << "Event " << fEventNum << " with timestamp " << timeinit << " has " << hitNum << " hits in " << clusterNum << " clusters.";
+   LOG(info) << "Event " << fEventNum << " with timestamp " << timeinit << " has " << hitNum << " hits in " << clusterNum << " clusters and " << SiC_entries.size() << " SiC entries.";
 
 }
 

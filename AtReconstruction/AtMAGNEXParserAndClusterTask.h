@@ -23,6 +23,7 @@ class AtMAGNEXParserAndClusterTask : public FairTask {
 protected:
    Bool_t fIsPersistence{false};
    TString fInputFileName;
+   TString fSiCFileName;
    TString fOutputBranchName;
 
    TString fChannelToColMapFileName;
@@ -31,15 +32,18 @@ protected:
 
    TString fDetectorParametersFileName;
    AtMAGNEXMap *fMap;
+   Double_t f_ps_to_us = 1.0e-06;  // ps to us factor.
+   Double_t fVDrift = 8.0;          // drift velocity in cm/us.
+
+   TClonesArray fEventArray;
+   Int_t fEventNum{0};
+   ULong64_t fEntryNum{0};
+   ULong64_t fSiCEntryNum{0};
+   ULong64_t fWindowSize{2000000};
+   ULong64_t fSiCDelay{2000000};
 
    std::unique_ptr<TFile> fInputFile{nullptr};
    TTree *fInputTree{nullptr};
-   TClonesArray fEventArray;
-
-   Int_t fEventNum{0};
-   ULong64_t fEntryNum{0};
-   ULong64_t fWindowSize{2000000};
-
    UShort_t Board;
    UShort_t Channel;
    UShort_t FTS;
@@ -52,11 +56,24 @@ protected:
    UShort_t Row;
    UShort_t Section;
 
+   std::unique_ptr<TFile> fSiCFile{nullptr};
+   TTree *fSiCTree{nullptr};
+   UShort_t Board_SiC;
+   UShort_t Channel_SiC;
+   UShort_t FTS_SiC;
+   ULong64_t CTS_SiC;
+   ULong64_t Timestamp_SiC;
+   UShort_t Charge_SiC;
+   UInt_t Flags_SiC;
+   Double_t Charge_cal_SiC;
+
 public:
-   AtMAGNEXParserAndClusterTask(TString inputFileName, TString channelToColMapFileName, TString detParFileName, TString outputBranchName = "AtHitClusterEventH");
+   AtMAGNEXParserAndClusterTask(TString inputFileName, TString SiCFileName, TString channelToColMapFileName, TString detParFileName, TString outputBranchName = "AtHitClusterEventH");
 
    void SetPersistence(bool value) { fIsPersistence = value; }
    void SetWindowSize(ULong64_t value) { fWindowSize = value; }
+   void SetSiCDelay(ULong64_t value) { fSiCDelay = value; }
+   void SetDriftVelocity(Double_t value) { fVDrift = value; }
 
    virtual InitStatus Init() override;
    virtual void Exec(Option_t *opt) override;
