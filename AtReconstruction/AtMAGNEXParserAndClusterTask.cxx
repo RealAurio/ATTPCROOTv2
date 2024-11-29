@@ -134,13 +134,14 @@ void AtMAGNEXParserAndClusterTask::Exec(Option_t *opt)
       fSiCTree->GetEntry(fSiCEntryNum);
       LOG(info) << "TS: " << timeinit << " TSSiC: " << Timestamp_SiC - fSiCDelay;
       if (Timestamp_SiC - fSiCDelay < timeinit) {
-         LOG(info) << "Hi";
+         LOG(info) << "Timestamp_SiC - fSiCDelay < timeinit => Moved to the next SiC entry.";
          ++fSiCEntryNum;
          continue;
       }
       if (Timestamp_SiC - fSiCDelay - timeinit > fWindowSize)
          break;
-      {LOG(info) << "Event: " << fEventNum << " SiC: " << fSiCEntryNum; SiC_entries.push_back(fSiCEntryNum);}
+      LOG(info) << "Event: " << fEventNum << " SiC: " << fSiCEntryNum << ".";
+      SiC_entries.push_back(fSiCEntryNum);
       ++fSiCEntryNum;
    }
 

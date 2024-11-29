@@ -6,6 +6,8 @@
 #include "AtHitClusterFull.h"
 
 #include <Rtypes.h>
+#include <TEveEventManager.h>
+#include <TEvePointSet.h>
 
 class TBuffer;
 class TClass;
@@ -17,6 +19,8 @@ class AtSubject;
 class AtTabMAGNEX : public AtTabMain {
 protected:
    TEveEventManagerPtr fEveHitClusterEvent{std::make_unique<TEveEventManager>("AtHitClusterEvent")};
+   TEveEventManagerPtr fEveMeanHits{std::make_unique<TEveEventManager>("Mean Points")};
+   TEvePointSetPtr fMeanHitSet{std::make_unique<TEvePointSet>("MeanHits")};
    std::vector<TEvePointSetPtr> fHitClusterSets;
 
    DataHandling::AtBranch *fHitClusterEventBranch;
@@ -35,6 +39,7 @@ protected:
 
 private:
    void UpdateHitClusterEventElements();
+   void UpdatePadPlane() override;
 
    void ExpandNumHitClusters(Int_t num);
 

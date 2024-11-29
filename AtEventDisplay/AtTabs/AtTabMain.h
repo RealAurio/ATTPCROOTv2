@@ -98,7 +98,7 @@ private:
    bool DrawWave(Int_t PadNum);
 
    // Update hit sets
-   void UpdatePadPlane();
+   virtual void UpdatePadPlane();
    void UpdateEventElements();
    void UpdatePatternEventElements();
 
