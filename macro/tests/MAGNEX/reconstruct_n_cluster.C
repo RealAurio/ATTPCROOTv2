@@ -16,7 +16,7 @@ void reconstruct_n_cluster(int runNumber = 210)
    // Set the in/out files
    TString inputFile = inputDir + "merg_005.root";
    TString SiCFile = inputDir + "sic_005.root";
-   TString outputFile = outDir + "test_cluster.root";
+   TString outputFile = outDir + "test_ransac.root";
 
    // Set the mapping for the TPC
    TString mapFile = "e12014_pad_mapping.xml"; //"Lookup20150611.xml";
@@ -64,7 +64,7 @@ void reconstruct_n_cluster(int runNumber = 210)
    auto sacTask = new AtSampleConsensusTask(std::move(sac));
    sacTask->SetPersistence(true);*/
 
-  /* AtRansacTask *ransacTask = new AtRansacTask();
+   AtMAGNEXRansacTask *ransacTask = new AtMAGNEXRansacTask();
    ransacTask->SetPersistence(kTRUE);
    ransacTask->SetVerbose(kTRUE);
    ransacTask->SetDistanceThreshold(5.0);
@@ -74,11 +74,10 @@ void reconstruct_n_cluster(int runNumber = 210)
    ransacTask->SetRanSamMode(
       0); // SampleMethod { kUniform = 0, kChargeWeighted = 1, kGaussian = 2, kWeightedGaussian = 3, kWeightedY = 4 };
    ransacTask->SetChargeThreshold(0);
-*/
 
    run->AddTask(parser);
    // run->AddTask(sacTask);
-   //run->AddTask(ransacTask);
+   run->AddTask(ransacTask);
 
    std::cout << "***** Starting Init ******" << std::endl;
    run->Init();

@@ -90,19 +90,17 @@ protected:
    void SetPointsFromHits(TEvePointSet &hitSet, const std::vector<AtHit *> &hits);
    void SetPointsFromTrack(TEvePointSet &hitSet, const AtTrack &track);
 
+   // Update hit sets
+   virtual void UpdatePadPlane();
+   void UpdateEventElements();
+   bool DrawWave(Int_t PadNum);
+   void UpdatePatternEventElements();
+   void ExpandNumPatterns(int num);
+
 private:
    // Functions to draw the initial canvases
    void DrawPadPlane();
    void DrawPadWave();
-
-   bool DrawWave(Int_t PadNum);
-
-   // Update hit sets
-   virtual void UpdatePadPlane();
-   void UpdateEventElements();
-   void UpdatePatternEventElements();
-
-   void ExpandNumPatterns(int num);
 
    ClassDefOverride(AtTabMain, 1)
 };

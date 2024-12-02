@@ -184,6 +184,7 @@ void AtMAGNEXParserAndClusterTask::Exec(Option_t *opt)
 
          hitCluster->AddHit(*hit);
       }
+      hitCluster->SetPosition(hitCluster->GetPositionCharge());
       event->AddHitCluster(hitCluster);
    }
 

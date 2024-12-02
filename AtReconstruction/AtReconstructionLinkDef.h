@@ -70,5 +70,6 @@
 #pragma link C++ class AtCopyAuxTreeTask + ;
 #pragma link C++ class AtMAGNEXParsingTask + ;
 #pragma link C++ class AtMAGNEXParserAndClusterTask + ;
+#pragma link C++ class AtMAGNEXRansacTask + ;
 
 #endif

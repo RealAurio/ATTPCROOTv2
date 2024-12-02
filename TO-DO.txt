@@ -1,0 +1,5 @@
+> Finish the implementation of the SiC detector.
+> Correct the Y values of the parser.
+> Correct the clustering.
+> Implement a MAGNEX.par file.
+> Refactor everything.

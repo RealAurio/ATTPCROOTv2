@@ -81,6 +81,7 @@ set(SRCS
   AtPatternRecognition/AtSampleEstimator.cxx
   AtPatternRecognition/AtEstimatorMethods.cxx
   AtRansacTask.cxx
+  AtMAGNEXRansacTask.cxx
   AtSampleConsensusTask.cxx
   AtPRAtask.cxx
   AtCopyTreeTask.cxx

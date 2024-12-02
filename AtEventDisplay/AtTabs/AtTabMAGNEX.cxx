@@ -59,8 +59,11 @@ void AtTabMAGNEX::Update(DataHandling::AtSubject *sub)
       UpdatePadPlane();
       UpdateHitClusterEventElements();
    }
+   if (sub == fPatternEventBranch || sub == fEntry) {
+      AtTabMain::UpdatePatternEventElements();
+   }
 
-   if (sub == fHitClusterEventBranch || sub == fEntry) {
+   if (sub == fHitClusterEventBranch || sub == fPatternEventBranch || sub == fEntry) {
       gEve->Redraw3D(false);
    }
 }
