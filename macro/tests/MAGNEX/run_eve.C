@@ -1,9 +1,7 @@
 
 void run_eve()
 {
-   TString InputDataPath = "/home/aurio/research/NUMEN/NUMEN_output/test_ransac.root";
-   //TString InputDataPath = "/home/aurio/research/NUMEN/NUMEN_output/test_cluster.root";
-   //TString InputDataPath = "/home/aurio/research/NUMEN/NUMEN_output/test_map.root";
+   TString InputDataPath = "/home/aurio/research/NUMEN/NUMEN_output/reconstructed_005.root";
    TString OutputDataPath = "/home/aurio/research/NUMEN/NUMEN_output/output.reco_display.root";
    std::cout << "Opening: " << InputDataPath << std::endl;
 
@@ -32,7 +30,6 @@ void run_eve()
    AtViewerManager *eveMan = new AtViewerManager(fMap);
 
    auto tabMain = std::make_unique<AtTabMAGNEX>();
-   //auto tabMain = std::make_unique<AtTabMain>();
    tabMain->SetMultiHit(100);
 
    eveMan->AddTab(std::move(tabMain));
