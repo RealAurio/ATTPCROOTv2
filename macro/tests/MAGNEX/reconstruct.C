@@ -56,8 +56,7 @@ void reconstruct(int runNumber = 210)
    auto *parser = new AtMAGNEXParserAndClusterTask(inputFile, SiCFile, planeMapFile, parPadFileName, "AtHitClusterEventH");
    parser->SetPersistence(kTRUE);
    //parser->SetWindowSize(2000000);             // 2000000 is the default value.
-   parser->SetSiCDelay(406332240257);          // 2000000 is the default value. This does not have any effect for now.
-   parser->SetDriftVelocity(8.0);              // 8.0 cm/us is the default value (completely arbitrary choice).
+   //parser->SetDriftVelocity(4.5);              // 4.5 cm/us is the default value (completely arbitrary choice).
 
    /*auto sac = std::make_unique<SampleConsensus::AtSampleConsensus>(
       SampleConsensus::Estimators::kRANSAC, AtPatterns::PatternType::kLine, RandomSample::SampleMethod::kUniform);
@@ -84,7 +83,7 @@ void reconstruct(int runNumber = 210)
    std::cout << "***** Ending Init ******" << std::endl;
 
    std::cout << "starting run" << std::endl;
-   run->Run(0, 1000);
+   run->Run(0, 93000);
 
    std::cout << std::endl << std::endl;
    std::cout << "Done unpacking events" << std::endl << std::endl;

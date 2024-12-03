@@ -120,8 +120,11 @@ InitStatus AtMAGNEXParserAndClusterTask::Init()
 
 void AtMAGNEXParserAndClusterTask::Exec(Option_t *opt)
 {
+   Long64_t previousEntryNum = fEntryNum;
+
    fInputTree->GetEntry(fEntryNum);
    Long64_t timeinit = Timestamp;
+   Long64_t timeref = timeinit;
 
    auto *event = dynamic_cast<AtHitClusterEvent *>(fEventArray.ConstructedAt(0, "C"));
    event->SetEventID(fEventNum++);
@@ -129,19 +132,16 @@ void AtMAGNEXParserAndClusterTask::Exec(Option_t *opt)
 
    std::vector<ULong64_t> SiC_entries;
 
-   //fSiCEntryNum = 0;
    while (fSiCEntryNum < fSiCTree->GetEntries()) {
       fSiCTree->GetEntry(fSiCEntryNum);
-      LOG(info) << "TS: " << timeinit << " TSSiC: " << Timestamp_SiC - fSiCDelay;
-      if (Timestamp_SiC - fSiCDelay < timeinit) {
-         LOG(info) << "Timestamp_SiC - fSiCDelay < timeinit => Moved to the next SiC entry.";
+      if (Timestamp_SiC + fWindowSize < timeinit) {
          ++fSiCEntryNum;
          continue;
       }
-      if (Timestamp_SiC - fSiCDelay - timeinit > fWindowSize)
+      if (Timestamp_SiC > timeinit)
          break;
-      LOG(info) << "Event: " << fEventNum << " SiC: " << fSiCEntryNum << ".";
       SiC_entries.push_back(fSiCEntryNum);
+      timeref = Timestamp_SiC;
       ++fSiCEntryNum;
    }
 
@@ -176,7 +176,7 @@ void AtMAGNEXParserAndClusterTask::Exec(Option_t *opt)
 
          XYPoint point = fMap->CalcPadCenter(fMap->PadID(Col, Row));
          Double_t x = point.X();
-         Double_t y = fVDrift * (Timestamp - timeinit) * f_ps_to_us * 10.; // First approach to calibration.
+         Double_t y = fDetHeight - fVDrift * (Timestamp - timeref) * f_ps_to_us * 10.; // First approach to calibration.
          Double_t z = point.Y();
 
          AtHit *hit = new AtHit(hitNum++, fMap->PadID(Col, Row), XYZPoint(x, y, z), Charge);
@@ -188,8 +188,10 @@ void AtMAGNEXParserAndClusterTask::Exec(Option_t *opt)
       event->AddHitCluster(hitCluster);
    }
 
-   LOG(info) << "Event " << fEventNum << " with timestamp " << timeinit << " has " << hitNum << " hits in " << clusterNum << " clusters and " << SiC_entries.size() << " SiC entries.";
-
+   if (fEntryNum != previousEntryNum)
+      LOG(info) << "Event " << fEventNum << " with timestamp " << timeinit << " has " << hitNum << " hits in " << clusterNum << " clusters.";
+   for (auto SiCEntry : SiC_entries)
+      LOG(info) << "Event " << fEventNum << " in coincidence with SiC entry " << SiCEntry << ".";
 }
 
 ClassImp(AtMAGNEXParserAndClusterTask)

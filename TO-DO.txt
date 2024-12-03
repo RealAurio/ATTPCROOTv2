@@ -1,5 +1,5 @@
 > Finish the implementation of the SiC detector.
-> Correct the Y values of the parser.
+> Create an analysis macro that plots the X and theta histograms.
 > Correct the clustering.
-> Implement a MAGNEX.par file.
+> Implement a MAGNEX.par file (remember the height parameter in the parser).
 > Refactor everything.
