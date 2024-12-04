@@ -55,8 +55,11 @@ void reconstruct(int runNumber = 210)
 
    auto *parser = new AtMAGNEXParserAndClusterTask(inputFile, SiCFile, planeMapFile, parPadFileName, "AtHitClusterEventH");
    parser->SetPersistence(kTRUE);
-   //parser->SetWindowSize(2000000);             // 2000000 is the default value.
-   //parser->SetDriftVelocity(4.5);              // 4.5 cm/us is the default value (completely arbitrary choice).
+   parser->SetVerbose(kFALSE);
+   //parser->SetWindowSize(2000000);             // 2000000 ps is the default value.
+   //parser->SetDriftVelocity(9.25);             // 9.25 cm/us is the default value (completely arbitrary choice).
+   parser->SetStripCluster(3);                 // 1 is the default value. Controls the maximum separation between hits in columns (or strip number) to be considered to be in the same cluster.
+   //parser->SetTimeCluster(100000);             // 100000 ps is the default value. Controls the maximum separation between hits in TS to be considered as part of the same cluster.
 
    /*auto sac = std::make_unique<SampleConsensus::AtSampleConsensus>(
       SampleConsensus::Estimators::kRANSAC, AtPatterns::PatternType::kLine, RandomSample::SampleMethod::kUniform);
@@ -65,7 +68,7 @@ void reconstruct(int runNumber = 210)
 
    AtMAGNEXRansacTask *ransacTask = new AtMAGNEXRansacTask();
    ransacTask->SetPersistence(kTRUE);
-   ransacTask->SetVerbose(kTRUE);
+   ransacTask->SetVerbose(kFALSE);
    ransacTask->SetDistanceThreshold(5.0);
    ransacTask->SetMinHitsLine(5);
    // in AtRansacTask parttern type set to line : auto patternType = AtPatterns::PatternType::kLine;
@@ -83,7 +86,7 @@ void reconstruct(int runNumber = 210)
    std::cout << "***** Ending Init ******" << std::endl;
 
    std::cout << "starting run" << std::endl;
-   run->Run(0, 93000);
+   run->Run(0, 4000000);
 
    std::cout << std::endl << std::endl;
    std::cout << "Done unpacking events" << std::endl << std::endl;

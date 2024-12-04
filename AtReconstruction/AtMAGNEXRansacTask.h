@@ -33,6 +33,8 @@ private:
    Int_t fRandSamplMode{0};
    Double_t fChargeThres{-1};
 
+   Int_t fPreviousEventNum{-1};
+
 public:
    AtMAGNEXRansacTask();
    ~AtMAGNEXRansacTask();

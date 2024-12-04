@@ -109,6 +109,9 @@ void AtMAGNEXRansacTask::Exec(Option_t *opt)
       return;
 
    fHitClusterEvent = dynamic_cast<AtHitClusterEvent *>(fEventArray->At(0));
+   if (fHitClusterEvent->GetEventID() == fPreviousEventNum)
+      return;
+   fPreviousEventNum = fHitClusterEvent->GetEventID();
 
    LOG(debug) << "Running (MAGNEX) RANSAC with " << fHitClusterEvent->GetNumHits() << " hits in " << fHitClusterEvent->GetNumHitClusters() << " clusters.";
    LOG(debug) << "Running Unified RANSAC";

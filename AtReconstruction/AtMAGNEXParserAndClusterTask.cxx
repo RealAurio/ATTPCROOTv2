@@ -19,6 +19,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <iterator>
 
 #include "AtHitClusterEvent.h"
 #include "AtHitClusterFull.h"
@@ -120,9 +121,17 @@ InitStatus AtMAGNEXParserAndClusterTask::Init()
 
 void AtMAGNEXParserAndClusterTask::Exec(Option_t *opt)
 {
-   Long64_t previousEntryNum = fEntryNum;
+   while (true && fEntryNum != fInputTree->GetEntries()) {
+      fInputTree->GetEntry(fEntryNum);
+      Int_t Col = fChannelToColMap->find(Channel)->second;
+      if (Col < fMap->GetColNum())
+         break;
+      fEntryNum++;
+   }
 
-   fInputTree->GetEntry(fEntryNum);
+   if (fEntryNum == fInputTree->GetEntries())
+      return;
+
    Long64_t timeinit = Timestamp;
    Long64_t timeref = timeinit;
 
@@ -163,33 +172,77 @@ void AtMAGNEXParserAndClusterTask::Exec(Option_t *opt)
 
    Int_t hitNum{0}, clusterNum{0};
    for (Int_t i = 0; i < fMap->GetRowNum(); ++i) {
-      if (entriesByRow[i].size() == 0)
-         continue;
+      while (entriesByRow[i].size()) {
+         AtHitClusterFull *hitCluster = new AtHitClusterFull();
+         hitCluster->SetClusterID(clusterNum++);
 
-      AtHitClusterFull *hitCluster = new AtHitClusterFull();
-      hitCluster->SetClusterID(clusterNum++);
-
-      for (ULong64_t entry : entriesByRow[i]) {
-         fInputTree->GetEntry(entry);
+         ULong64_t clusterEntrySeed = entriesByRow[i].back();
+         entriesByRow[i].pop_back();
+         fInputTree->GetEntry(clusterEntrySeed);
 
          Int_t Col = fChannelToColMap->find(Channel)->second;
 
          XYPoint point = fMap->CalcPadCenter(fMap->PadID(Col, Row));
          Double_t x = point.X();
-         Double_t y = fDetHeight - fVDrift * (Timestamp - timeref) * f_ps_to_us * 10.; // First approach to calibration.
+         Double_t y = fDetHeight - fVDrift * (Timestamp - timeref) * f_ps_to_us * 10.;
          Double_t z = point.Y();
 
-         AtHit *hit = new AtHit(hitNum++, fMap->PadID(Col, Row), XYZPoint(x, y, z), Charge);
-         hit->SetTimeStamp(FTS);
+         AtHit *firstHit = new AtHit(hitNum++, fMap->PadID(Col, Row), XYZPoint(x, y, z), Charge);
+         firstHit->SetTimeStamp(Timestamp);
 
-         hitCluster->AddHit(*hit);
+         hitCluster->AddHit(*firstHit);
+
+         Int_t minCol = Col - fStripCluster;
+         Int_t maxCol = Col + fStripCluster;
+
+         ULong64_t minTS = Timestamp - fTimeCluster;
+         ULong64_t maxTS = Timestamp + fTimeCluster;
+
+         Int_t skipEntries = 0;
+         while (skipEntries != entriesByRow[i].size()) {
+            while (skipEntries != entriesByRow[i].size()) {
+               Int_t index = entriesByRow[i].size() - 1 - skipEntries;
+
+               ULong64_t entry = entriesByRow[i][index];
+               fInputTree->GetEntry(entry);
+
+               Col = fChannelToColMap->find(Channel)->second;
+               if (minCol <= Col && Col <= maxCol && minTS < Timestamp && Timestamp < maxTS) {
+                  point = fMap->CalcPadCenter(fMap->PadID(Col, Row));
+                  x = point.X();
+                  y = fDetHeight - fVDrift * (Timestamp - timeref) * f_ps_to_us * 10.;
+                  z = point.Y();
+
+                  AtHit *hit = new AtHit(hitNum++, fMap->PadID(Col, Row), XYZPoint(x, y, z), Charge);
+                  hit->SetTimeStamp(Timestamp);
+
+                  hitCluster->AddHit(*hit);
+
+                  if (Col - fStripCluster < minCol)
+                     minCol = Col - fStripCluster;
+                  if (Col + fStripCluster > maxCol)
+                     maxCol = Col + fStripCluster;
+
+                  if (Timestamp - fTimeCluster < minTS)
+                     minTS = Timestamp - fTimeCluster;
+                  if (Timestamp + fTimeCluster > maxTS)
+                     maxTS = Timestamp + fTimeCluster;
+
+                  entriesByRow[i].erase(std::next(entriesByRow[i].begin(), index));
+                  skipEntries = 0;
+                  break;
+               }
+
+               skipEntries++;
+            }
+         }
+
+         hitCluster->SetPosition(hitCluster->GetPositionCharge());
+         event->AddHitCluster(hitCluster);
       }
-      hitCluster->SetPosition(hitCluster->GetPositionCharge());
-      event->AddHitCluster(hitCluster);
    }
 
-   if (fEntryNum != previousEntryNum)
-      LOG(info) << "Event " << fEventNum << " with timestamp " << timeinit << " has " << hitNum << " hits in " << clusterNum << " clusters.";
+   LOG(info) << "Event " << fEventNum << " with timestamp " << timeinit << " has " << hitNum << " hits in " << clusterNum << " clusters.";
    for (auto SiCEntry : SiC_entries)
       LOG(info) << "Event " << fEventNum << " in coincidence with SiC entry " << SiCEntry << ".";
 }

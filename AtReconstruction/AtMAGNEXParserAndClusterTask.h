@@ -33,14 +33,17 @@ protected:
    TString fDetectorParametersFileName;
    AtMAGNEXMap *fMap;
    Double_t f_ps_to_us = 1.0e-06;  // ps to us factor.
-   Double_t fVDrift = 4.5;         // drift velocity in cm/us.
-   Double_t fDetHeight = 185.;     // Detector height in cm.
+   Double_t fVDrift = 9.25;        // drift velocity in cm/us.
+   Double_t fDetHeight = 185.;     // Detector height in mm.
 
    TClonesArray fEventArray;
    Int_t fEventNum{0};
    ULong64_t fEntryNum{0};
    ULong64_t fSiCEntryNum{0};
    ULong64_t fWindowSize{2000000};
+
+   Int_t fStripCluster{1};
+   ULong64_t fTimeCluster{100000};
 
    std::unique_ptr<TFile> fInputFile{nullptr};
    TTree *fInputTree{nullptr};
@@ -73,6 +76,8 @@ public:
    void SetPersistence(bool value) { fIsPersistence = value; }
    void SetWindowSize(ULong64_t value) { fWindowSize = value; }
    void SetDriftVelocity(Double_t value) { fVDrift = value; }
+   void SetStripCluster(Int_t value) { fStripCluster = value; }
+   void SetTimeCluster(ULong64_t value) { fTimeCluster = value; }
 
    virtual InitStatus Init() override;
    virtual void Exec(Option_t *opt) override;
