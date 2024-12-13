@@ -13,6 +13,10 @@ void histogrammer()
 
    TH1F *multiplicityHist = new TH1F("multiplicityHist", "multiplicityHist", 10, -0.5, 9.5);
 
+   TH1F *xSourceHist = new TH1F("xSourceHist", "xSourceHist", 1100, -100, 1000);
+   TH1F *zSourceHist = new TH1F("zSourceHist", "zSourceHist", 100, -200, 200);
+   TH2F *sourceHist = new TH2F("sourceHist", "sourceHist", 250, 0, 500, 250, -300, 200);
+
    // Initialize the FairRun, and load the output of the recontruct.C macro.
    FairRunAna *run = new FairRunAna();
 
@@ -24,6 +28,10 @@ void histogrammer()
    TTreeReader Reader("cbmsim", file);
    TTreeReaderValue<TClonesArray> eventHArray(Reader, "AtHitClusterEventH");
    TTreeReaderValue<TClonesArray> patternArray(Reader, "AtPatternEvent");
+
+   Double_t x0Prev{}, z0Prev{};
+   Double_t xPrimePrev{}, zPrimePrev{};
+   Bool_t firstTrack{true};
 
    // Iterate over events.
    std::cout << "Event:" << std::endl;
@@ -67,6 +75,23 @@ void histogrammer()
 
             thetaHist->Fill(theta);
             phiHist->Fill(phi);
+
+            // Compute another (x,z) point for the source.
+            if (!firstTrack) {
+               Double_t zSource = (entrancePoint.X() - x0Prev + xPrimePrev / zPrimePrev * z0Prev - directionVector.X() / directionVector.Z() * entrancePoint.Z()) / (xPrimePrev / zPrimePrev - directionVector.X() / directionVector.Z());
+               Double_t xSource = x0Prev + xPrimePrev * (zSource - z0Prev) / zPrimePrev;
+
+               xSourceHist->Fill(xSource);
+               zSourceHist->Fill(zSource);
+               sourceHist->Fill(xSource, zSource);
+            }
+
+            firstTrack = false;
+
+            x0Prev = entrancePoint.X();
+            z0Prev = entrancePoint.Z();
+            xPrimePrev = directionVector.X();
+            zPrimePrev = directionVector.Z();
          }
          multiplicityHist->Fill(tracks.size());
       }
@@ -93,4 +118,13 @@ void histogrammer()
 
    TCanvas *cMultiplicity = new TCanvas();
    multiplicityHist->Draw();
+
+   TCanvas *cXSource = new TCanvas();
+   xSourceHist->Draw();
+
+   TCanvas *cZSource = new TCanvas();
+   zSourceHist->Draw();
+
+   TCanvas *cSource = new TCanvas();
+   sourceHist->Draw("zcol");
 }
