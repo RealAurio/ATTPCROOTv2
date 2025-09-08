@@ -103,8 +103,8 @@ protected:
    bool DrawWave(Int_t PadNum);
 
    // Update hit sets
-   void UpdatePadPlane();
-   void UpdateEventElements();
+   virtual void UpdatePadPlane();
+   virtual void UpdateEventElements();
    virtual void UpdatePatternEventElements();
 
    void ExpandNumPatterns(int num);
