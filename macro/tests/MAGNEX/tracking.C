@@ -8,7 +8,7 @@ void tracking()
    std::ofstream hitsFile;
    hitsFile.open("hits.txt");
 
-   TFile *file = new TFile("/home/aurio/research/NUMEN/NUMEN_output/test.root", "READ");
+   TFile *file = new TFile("/home/aurio/research/NUMEN/NUMEN_output/reconstructed_005_new_geometry.root", "READ");
    TTree *tree = (TTree *)file->Get("cbmsim");
    Int_t nEvents = tree->GetEntries();
    std::cout << " Number of events : " << nEvents << std::endl;
@@ -50,14 +50,14 @@ void tracking()
 
       Reader.Next();
 
-      AtEvent *event = (AtEvent *)eventHArray->At(0);
+      AtHitClusterEvent *event = (AtHitClusterEvent *)eventHArray->At(0);
       AtPatternEvent *patternEvent = (AtPatternEvent *)patternArray->At(0);
 
       chargeHist->Reset("ICESM");
 
       if (event && patternEvent) {
 
-         auto &hitArray = event->GetHits();
+         auto &hitArray = event->GetHitClusters();
          auto &tracks = patternEvent->GetTrackCand();
          std::cout << " Number of hits : " << hitArray.size() << std::endl;
          std::cout << " Number of tracks : " << tracks.size() << std::endl;

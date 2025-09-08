@@ -14,9 +14,9 @@ void reconstruct(int runNumber = 210)
    TString outDir = "/home/aurio/research/NUMEN/NUMEN_output/";
 
    // Set the in/out files
-   TString inputFile = inputDir + "merg_005.root";
-   TString SiCFile = inputDir + "sic_005.root";
-   TString outputFile = outDir + "reconstructed_005.root";
+   TString inputFile = inputDir + "merg_131.root";
+   TString SiCFile = inputDir + "sic_131.root";
+   TString outputFile = outDir + "reconstructed_131.root";
 
    // Set the mapping for the TPC
    TString mapFile = "e12014_pad_mapping.xml"; //"Lookup20150611.xml";
@@ -30,7 +30,8 @@ void reconstruct(int runNumber = 210)
    TString geomDir = dir + "/geometry/";
    gSystem->Setenv("GEOMPATH", geomDir.Data());
    TString digiParFile = dir + "/parameters/" + parameterFile;
-   TString geoManFile = dir + "/geometry/ATTPC_H1bar.root";
+   //TString geoManFile = dir + "/geometry/ATTPC_H1bar.root";
+   TString geoManFile = dir + "/geometry/MAGNEX_in_development.root";
 
    // Create a run
    FairRunAna *run = new FairRunAna();
@@ -56,7 +57,7 @@ void reconstruct(int runNumber = 210)
    auto *parser = new AtMAGNEXParserAndClusterTask(inputFile, SiCFile, planeMapFile, parPadFileName, "AtHitClusterEventH");
    parser->SetPersistence(kTRUE);
    parser->SetVerbose(kFALSE);
-   //parser->SetWindowSize(2000000);             // 2000000 ps is the default value.
+   parser->SetWindowSize(3000000);             // 2000000 ps is the default value.
    //parser->SetDriftVelocity(9.25);             // 9.25 cm/us is the default value (completely arbitrary choice).
    parser->SetStripCluster(3);                 // 1 is the default value. Controls the maximum separation between hits in columns (or strip number) to be considered to be in the same cluster.
    //parser->SetTimeCluster(100000);             // 100000 ps is the default value. Controls the maximum separation between hits in TS to be considered as part of the same cluster.

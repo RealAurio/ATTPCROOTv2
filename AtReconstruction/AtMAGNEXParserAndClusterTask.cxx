@@ -165,7 +165,7 @@ void AtMAGNEXParserAndClusterTask::Exec(Option_t *opt)
       if (Timestamp - timeinit > fWindowSize)
          break;
       Int_t Col = fChannelToColMap->find(Channel)->second;
-      if (Col < fMap->GetColNum())
+      if (Col < fMap->GetColNum() && Row < fMap->GetRowNum())
          entriesByRow[Row].push_back(fEntryNum);
       ++fEntryNum;
    }

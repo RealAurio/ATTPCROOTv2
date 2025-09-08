@@ -8,8 +8,8 @@ void histogrammer()
    TH1F *yHist = new TH1F("yHist", "yHist", 100, 0, 285);
    TH1F *zHist = new TH1F("zHist", "zHist", 21, -10, 10);
 
-   TH1F *thetaHist = new TH1F("thetaHist", "thetaHist", 180, -90, 90);
-   TH1F *phiHist = new TH1F("phiHist", "phiHist", 180, -90, 90);
+   TH1F *thetaHist = new TH1F("thetaHist", "thetaHist", 360, -180, 180);
+   TH1F *phiHist = new TH1F("phiHist", "phiHist", 360, -180, 180);
 
    TH1F *multiplicityHist = new TH1F("multiplicityHist", "multiplicityHist", 10, -0.5, 9.5);
 
@@ -20,7 +20,7 @@ void histogrammer()
    // Initialize the FairRun, and load the output of the recontruct.C macro.
    FairRunAna *run = new FairRunAna();
 
-   TFile *file = new TFile("/home/aurio/research/NUMEN/NUMEN_output/reconstructed_005.root", "READ");
+   TFile *file = new TFile("/home/aurio/research/NUMEN/NUMEN_output/reconstructed_131.root", "READ");
    TTree *tree = (TTree *)file->Get("cbmsim");
    Int_t nEvents = tree->GetEntries();
    std::cout << " Number of events : " << nEvents << std::endl;
@@ -47,6 +47,11 @@ void histogrammer()
 
          // Access the tracks in each event.
          auto &tracks = patternEvent->GetTrackCand();
+         if (tracks.size() == 0)
+            continue;
+
+         //if (tracks.size() > 2)
+            //std::cout << "Event " << i << " has " << tracks.size() << " tracks." << std::endl;
 
          for (auto &track : tracks) {
 
