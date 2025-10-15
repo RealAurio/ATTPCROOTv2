@@ -1,6 +1,8 @@
 #ifndef ATTABBRAGGCURVE_H
 #define ATTABBRAGGCURVE_H
 
+#include "AtFittedTrack.h"
+#include "AtFitMetadata.h"
 #include "AtTabMain.h" // for AtTabMain::TEvePointSetPtr, AtTa...
 #include "AtTrack.h"
 #include "AtViewerManagerSubject.h" // for AtBranch
@@ -9,6 +11,7 @@
 #include <TEveEventManager.h> // for TEveEventManager
 #include <TEvePointSet.h>     // for TEvePointSet
 #include <TH1F.h>
+#include <TGraph.h>
 
 #include <array>        // for array
 #include <memory>       // for make_unique
@@ -26,12 +29,16 @@ class AtTabBraggCurve : public AtTabMain {
 protected:
    TCanvas *fCvsELossVRange{nullptr};
    TH1F *fHistELossVRange{nullptr};
+   TGraph *fFittedELossGraph{nullptr};
 
    int fTrackIdx{-1};
+   DataHandling::AtBranch *fTrackingEventBranch;
+   DataHandling::AtBranch *fFitMetadataBranch;
 
 public:
    AtTabBraggCurve();
    virtual ~AtTabBraggCurve();
+   void InitTab() override;
 
    virtual void Update(DataHandling::AtSubject *sub) override;
 
@@ -42,6 +49,12 @@ protected:
    void DrawHistELossVRange(AtTrack::BraggCurve braggCurve);
 
    virtual void UpdatePatternEventElements() override;
+   void UpdateTrackingEventElements();
+   void UpdateFitMetadata();
+
+   void PrintFittedTrackInfo(AtFittedTrack fittedTrack);
+   void DrawBestFittingELoss(AtFittedTrack fittedTrack);
+   void PrintFittedTrackMetadata(AtFitMetadata *fitMetadata);
 
 private:
    ClassDefOverride(AtTabBraggCurve, 1);

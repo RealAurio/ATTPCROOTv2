@@ -3,27 +3,44 @@
 #include <FairLogger.h>
 namespace AtTools {
 
-AtELossCATIMA::AtELossCATIMA(double density, std::vector<std::tuple<int, int, int>> materialComponents)
-   : AtELossModel(density)
+AtELossCATIMA::AtELossCATIMA(double density, std::vector<std::tuple<int, int, int>> materialComponents,
+                             std::string name)
+   : AtELossModel(density, name)
 {
    SetMaterial(materialComponents);
+}
+
+void AtELossCATIMA::SetChargeNumber(int z)
+{
+   fZ = z;
+   SetProjectile(fA, fZ, fMassAmu);
+}
+
+void AtELossCATIMA::SetAtomicMassNumber(int a)
+{
+   fA = a;
+   SetProjectile(fA, fZ, fMassAmu);
+}
+
+void AtELossCATIMA::SetMassAmu(double mass)
+{
+   fMassAmu = mass;
+   SetProjectile(fA, fZ, fMassAmu);
 }
 
 double AtELossCATIMA::GetdEdx(double energy) const
 {
    if (fProjectile == nullptr) {
-      LOG(warning)
-         << " Warning in AtTools::AtELossCATIMA::GetdEdx : The projectile was not set! GetdEdx will return 0!";
+      LOG(warning) << " The projectile was not set! GetdEdx will return 0!";
       return 0;
    }
 
-   if (fProjectileMassAmu <= 0) {
-      LOG(error) << " Error in AtTools::AtELossCATIMA::GetdEdx : The projectile's mass in umas can not be <= 0! "
-                    "GetdEdx will return 0!";
+   if (fMassAmu <= 0) {
+      LOG(error) << " The projectile's mass in umas can not be <= 0! GetdEdx will return 0!";
       return 0;
    }
 
-   catima::Result result = catima::calculate(*fProjectile, *fMaterial, energy / fProjectileMassAmu);
+   catima::Result result = catima::calculate(*fProjectile, *fMaterial, energy / fMassAmu);
    double dEdx = result.dEdxi * fDensity; // MeV/cm
    return dEdx / 10.0;                    // convert to MeV/mm
 }
@@ -31,20 +48,19 @@ double AtELossCATIMA::GetdEdx(double energy) const
 double AtELossCATIMA::GetRange(double energyIni, double energyFin) const
 {
    if (energyFin < 0) {
-      LOG(warning) << " Warning in AtTools::AtELossCATIMA::GetRange : The final energy was set to a negative value! "
-                      "Setting energyFin to 0!";
+      LOG(warning) << " The final energy was set to a negative value! Setting energyFin to 0!";
       energyFin = 0;
    }
 
    if (energyFin == 0) {
-      fProjectile->T = energyIni / fProjectileMassAmu;
+      fProjectile->T = energyIni / fMassAmu;
       return catima::range(*fProjectile, *fMaterial) / fDensity * 10.;
    }
 
    double remainingEnergy{energyIni};
    double range{0};
    while (remainingEnergy > energyFin) {
-      catima::Result result = catima::calculate(*fProjectile, *fMaterial, remainingEnergy / fProjectileMassAmu);
+      catima::Result result = catima::calculate(*fProjectile, *fMaterial, remainingEnergy / fMassAmu);
       double dEdx = result.dEdxi * fDensity;
       double DE = dEdx * fRangeStepSize / 10.;
 
@@ -65,7 +81,7 @@ double AtELossCATIMA::GetEnergy(double energyIni, double distance) const
    double remainingEnergy{energyIni};
    double range{0};
    while (range < distance) {
-      catima::Result result = catima::calculate(*fProjectile, *fMaterial, remainingEnergy / fProjectileMassAmu);
+      catima::Result result = catima::calculate(*fProjectile, *fMaterial, remainingEnergy / fMassAmu);
       double dEdx = result.dEdxi * fDensity;
       double DE{};
 
@@ -90,11 +106,11 @@ double AtELossCATIMA::GetRangeVariance(double energy) const
       return 0;
    }
    auto range_var =
-      catima::range_variance(*fProjectile, energy / fProjectileMassAmu, *fMaterial); // range var in (g/cm^2)^2
-   LOG(debug) << "Range variance in (g/cm^2)^2: " << range_var << " for energy: " << energy / fProjectileMassAmu
+      catima::range_variance(*fProjectile, energy / fMassAmu, *fMaterial); // range var in (g/cm^2)^2
+   LOG(debug) << "Range variance in (g/cm^2)^2: " << range_var << " for energy: " << energy / fMassAmu
               << " MeV/u";
    range_var /= fDensity * fDensity; // convert to (cm)^2
-   LOG(debug) << "Range variance in (cm)^2: " << range_var << " for energy: " << energy / fProjectileMassAmu
+   LOG(debug) << "Range variance in (cm)^2: " << range_var << " for energy: " << energy / fMassAmu
               << " MeV/u";
    return range_var * 100; // convert to mm^2
 }
@@ -109,8 +125,8 @@ double AtELossCATIMA::GetElossStraggling(double energyIni, double energyFin) con
       LOG(error) << "Final energy must be less than initial energy!";
       return 0;
    }
-   auto energy_strag = catima::energy_straggling_from_E(*fProjectile, energyIni / fProjectileMassAmu,
-                                                        energyFin / fProjectileMassAmu, *fMaterial);
+   auto energy_strag = catima::energy_straggling_from_E(*fProjectile, energyIni / fMassAmu,
+                                                        energyFin / fMassAmu, *fMaterial);
    return energy_strag;
 }
 double AtELossCATIMA::GetdEdxStraggling(double energyIni, double energyFin) const
@@ -131,10 +147,10 @@ double AtELossCATIMA::GetdEdxStraggling(double energyIni, double energyFin) cons
 }
 
 std::vector<std::pair<double, double>>
-AtELossCATIMA::GetBraggCurve(double energy, double rangeStepSize, double totalFractionELoss) const
+AtELossCATIMA::GetBraggCurve(double energy, double rangeStepSize, double totalFractionELoss, double minRange) const
 {
    if (rangeStepSize == 0)
-      return GetBraggCurve(energy, fRangeStepSize, totalFractionELoss);
+      return GetBraggCurve(energy, fRangeStepSize, totalFractionELoss, minRange);
 
    std::vector<std::pair<double, double>> braggCurve;
 
@@ -142,15 +158,23 @@ AtELossCATIMA::GetBraggCurve(double energy, double rangeStepSize, double totalFr
    double range{};
    while (remainingEnergy / energy > totalFractionELoss) {
 
-      catima::Result result = catima::calculate(*fProjectile, *fMaterial, remainingEnergy / fProjectileMassAmu);
+      catima::Result result = catima::calculate(*fProjectile, *fMaterial, remainingEnergy / fMassAmu);
       double dEdx = result.dEdxi * fDensity;
       braggCurve.push_back(std::make_pair(dEdx, range));
+      range += rangeStepSize;
 
       double DE = dEdx * rangeStepSize / 10.;
-      if (DE > remainingEnergy)
+      if (DE > remainingEnergy || DE == 0)
          break;
 
       remainingEnergy -= DE;
+   }
+
+   if (!minRange)
+      return braggCurve;
+
+   while (range < minRange - rangeStepSize) {
+      braggCurve.push_back(std::make_pair(0, range));
       range += rangeStepSize;
    }
 

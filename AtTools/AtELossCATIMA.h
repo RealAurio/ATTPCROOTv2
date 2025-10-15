@@ -16,8 +16,6 @@ protected:
    std::unique_ptr<catima::Material> fMaterial{nullptr};
    std::unique_ptr<catima::Projectile> fProjectile{nullptr};
 
-   double fProjectileMassAmu{-1}; /// Mass of the projectile in amu (atomic mass units).
-
    double fRangeStepSize{0.1}; // mm
 
 public:
@@ -27,12 +25,17 @@ public:
     * @param[in] materialComponents Components of the material. They are passed as a vector of tuples (A, Z,
     * stoichiometry).
     */
-   AtELossCATIMA(double density) : AtELossModel(density) {}
-   AtELossCATIMA(double density, std::vector<std::tuple<int, int, int>> materialComponents);
-   AtELossCATIMA(double density, const catima::Material &material)
-      : AtELossModel(density), fMaterial(std::make_unique<catima::Material>(material))
+   AtELossCATIMA(double density, std::string name = "CATima") : AtELossModel(density, name) {}
+   AtELossCATIMA(double density, std::vector<std::tuple<int, int, int>> materialComponents,
+                 std::string name = "CATima");
+   AtELossCATIMA(double density, const catima::Material &material, std::string name = "CATima")
+      : AtELossModel(density, name), fMaterial(std::make_unique<catima::Material>(material))
    {
    }
+
+   virtual void SetChargeNumber(int z) override;
+   virtual void SetAtomicMassNumber(int a) override;
+   virtual void SetMassAmu(double mass) override;
 
    virtual double GetdEdx(double energy) const override;
    virtual double GetRange(double energyIni, double energyFin = 0) const override;
@@ -47,7 +50,7 @@ public:
    virtual double GetdEdxStraggling(double energyIni, double energyFin) const override;
 
    virtual std::vector<std::pair<double, double>>
-   GetBraggCurve(double energy, double rangeStepSize = 0, double totalFractionELoss = 0.001) const override;
+   GetBraggCurve(double energy, double rangeStepSize = 0, double totalFractionELoss = 0.001, double minRange = 0) const override;
 
    /**
     * Setter of the catima projectile used for calculations.
@@ -58,7 +61,9 @@ public:
    void SetProjectile(double A, double Z, double massAmu)
    {
       fProjectile = std::make_unique<catima::Projectile>(A, Z);
-      fProjectileMassAmu = massAmu;
+      fA = A;
+      fZ = Z;
+      fMassAmu = massAmu;
    }
    void SetMaterial(const catima::Material &material) { fMaterial = std::make_unique<catima::Material>(material); }
    void SetMaterial(std::vector<std::tuple<int, int, int>> materialComponents);

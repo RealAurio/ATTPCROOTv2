@@ -1,0 +1,58 @@
+#ifndef ATFITTRACKMETADATA_H
+#define ATFITTRACKMETADATA_H
+
+#include <Rtypes.h> // for Double_t, THashConsistencyHolder, ClassDefOverride
+#include <TObject.h>
+
+#include <memory>
+class TBuffer;
+class TClass;
+class TMemberInspector;
+
+/**
+ * Class for storing the result of the fit of an AtTrack from an AtFitter class.
+ */
+class AtFitTrackMetadata : public TObject {
+protected:
+   // Statistics parameters of the fit.
+   Double_t fPValue{0};
+   Double_t fChi2{0};
+   Int_t fNdf{0};
+   Bool_t fFitConverged{false};
+
+   // The track ID for which this fit was done for.
+   Int_t fTrackID{-1};
+
+   // More than 1 fit may be done for each track. Adding a fit ID.
+   Int_t fFitID{-1};
+
+public:
+   AtFitTrackMetadata() = default;
+   AtFitTrackMetadata(const AtFitTrackMetadata &) = default;
+   AtFitTrackMetadata(AtFitTrackMetadata &&) = default;
+   ~AtFitTrackMetadata() = default;
+   AtFitTrackMetadata &operator=(const AtFitTrackMetadata &) = default;
+   AtFitTrackMetadata &operator=(AtFitTrackMetadata &&) = default;
+
+   virtual std::unique_ptr<AtFitTrackMetadata> Clone();
+
+   void SetPValue(Double_t value) { fPValue = value; }
+   void SetChi2(Double_t value) { fChi2 = value; }
+   void SetNdf(Int_t value) { fNdf = value; }
+   void SetFitConverged(Bool_t value) { fFitConverged = value; }
+   void SetTrackID(Int_t value) { fTrackID = value; }
+   void SetFitID(Int_t value) { fFitID = value; }
+
+   Double_t GetPValue() const { return fPValue; }
+   Double_t GetChi2() const { return fChi2; }
+   Int_t GetNdf() const { return fNdf; }
+   Bool_t GetFitConverged() const { return fFitConverged; }
+   Int_t GetTrackID() const { return fTrackID; }
+   Int_t GetFitID() const { return fFitID; }
+
+   virtual void Print() const;
+
+   ClassDefOverride(AtFitTrackMetadata, 1);
+};
+
+#endif
