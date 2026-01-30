@@ -58,7 +58,7 @@ void AtPatternLine::DefinePattern(const std::vector<XYZPoint> &points)
    auto fPoint = points[0];
    auto fDirection = points[1] - points[0];
    if (fDirection.Z() != 0)
-      fDirection /= fabs(fDirection.Z());
+      fDirection /= fDirection.Z();
 
    fPatternPar = {fPoint.X(), fPoint.Y(), fPoint.Z(), fDirection.X(), fDirection.Y(), fDirection.Z()};
 }
