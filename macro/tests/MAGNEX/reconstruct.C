@@ -1,4 +1,4 @@
-void reconstruct(int runNumber = 210)
+void reconstruct(int runNumber = 298)
 {
    // Load the library for unpacking and reconstruction
    gSystem->Load("libAtReconstruction.so");
@@ -10,18 +10,18 @@ void reconstruct(int runNumber = 210)
    timer.Start();
 
    // Set the input/output directories
-   TString inputDir = "/home/aurio/research/NUMEN/NUMEN_data/";
-   TString outDir = "/home/aurio/research/NUMEN/NUMEN_output/";
+   TString inputDir = TString::Format("/home/aurio/research/NUMEN/NUMEN_data/dataBrazil/Run%03d/Converted/", runNumber);
+   TString outDir = "/home/aurio/research/NUMEN/NUMEN_output/dataBrazil/";
 
    // Set the in/out files
-   TString inputFile = inputDir + "merg_131.root";
-   TString SiCFile = inputDir + "sic_131.root";
-   TString outputFile = outDir + "reconstructed_131.root";
+   TString inputFile = inputDir + TString::Format("merg_%03d.root", runNumber);
+   TString SiCFile = inputDir + TString::Format("sic_%03d.root", runNumber);
+   TString outputFile = outDir + TString::Format("reconstructed_%03d.root", runNumber);
 
    // Set the mapping for the TPC
    TString mapFile = "e12014_pad_mapping.xml"; //"Lookup20150611.xml";
    TString parameterFile = "ATTPC.e12014.par";
-   TString planeMapFile = inputDir + "channel2pad_2.txt";
+   TString planeMapFile = "/home/aurio/research/NUMEN/NUMEN_data/channel2pad_2.txt";
    TString parPadFileName = "/home/aurio/research/NUMEN/NUMEN_data/testParFile.txt";
 
    // Set directories
