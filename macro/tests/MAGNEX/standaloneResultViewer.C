@@ -1,4 +1,4 @@
-void standaloneResultViewer(int runNumber = 298)
+void standaloneResultViewer(int runNumber = 38)
 {
    // Define the histograms to be filled.
    TH1F *xRansacEntranceHist = new TH1F("xRansacEntranceHist", "xRansacEntranceHist", 600, 0, 300);
@@ -28,6 +28,7 @@ void standaloneResultViewer(int runNumber = 298)
 
    // Open the results file and load the data.
    Int_t eventID{}, trackID{};
+   Long64_t firstTrackTimeStamp{};
    Double_t xRansacEntrance{}, yRansacEntrance{}, zRansacEntrance{}, theta{}, phi{};
    Double_t xRansacRow[5], yRansacRow[5], zRansacRow[5];
 
@@ -38,6 +39,7 @@ void standaloneResultViewer(int runNumber = 298)
 
    anatree->SetBranchAddress("eventID", &eventID);
    anatree->SetBranchAddress("trackID", &trackID);
+   anatree->SetBranchAddress("firstTrackTimeStamp", &firstTrackTimeStamp);
    anatree->SetBranchAddress("xRansacEntrance", &xRansacEntrance);
    anatree->SetBranchAddress("yRansacEntrance", &yRansacEntrance);
    anatree->SetBranchAddress("zRansacEntrance", &zRansacEntrance);
@@ -46,6 +48,10 @@ void standaloneResultViewer(int runNumber = 298)
    anatree->SetBranchAddress("xRansacRow", xRansacRow);
    anatree->SetBranchAddress("yRansacRow", yRansacRow);
    anatree->SetBranchAddress("zRansacRow", zRansacRow);
+
+   // File where to write the TS, angle, event and track ID.
+   std::ofstream outputFile;
+   outputFile.open(TString::Format("ATTPCROOTv2_RANSACangles_run%03d.txt", runNumber).Data());
 
    // Iterate over entries.
    std::cout << "Entry:" << std::endl;
@@ -67,9 +73,17 @@ void standaloneResultViewer(int runNumber = 298)
          yRansacRowHist[iRow]->Fill(yRansacRow[iRow]);
          zRansacRowHist[iRow]->Fill(zRansacRow[iRow]);
       }
+
+      outputFile << " Event: " << eventID << " | Track: " << trackID << "\n";
+      outputFile << "   firstTrackTimeStamp = " << firstTrackTimeStamp << " ps\n";
+      outputFile << "   theta = " << theta << " deg\n";
+      outputFile << "   phi = " << phi << " deg\n";
+      outputFile << std::endl;
+
    }
    // Close the files.
    resultFile->Close();
+   outputFile.close();
 
    // Draw the histograms.
    TCanvas *cXRansacEntrance = new TCanvas();

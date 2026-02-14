@@ -87,3 +87,8 @@ TMatrixDSym AtHitClusterFull::GetCovMatrixFull() const
 
    return cov;
 }
+
+void AtHitClusterFull::SortHitArrayTime()
+{
+   std::sort(fHits.begin(), fHits.end(), AtHit::SortHitTime);
+}

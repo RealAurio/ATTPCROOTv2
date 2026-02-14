@@ -1,5 +1,5 @@
 
-void run_eve(int runNumber = 298)
+void run_eve(int runNumber = 38)
 {
    TString InputDataPath = TString::Format("/home/aurio/research/NUMEN/NUMEN_output/dataBrazil/reconstructed_%03d.root", runNumber);
    TString OutputDataPath = "/home/aurio/research/NUMEN/NUMEN_output/output.reco_display.root";

@@ -238,6 +238,8 @@ void AtMAGNEXParserAndClusterTask::Exec(Option_t *opt)
          }
 
          hitCluster->SetPosition(hitCluster->GetPositionCharge());
+         hitCluster->SortHitArrayTime();
+         hitCluster->SetTimeStamp(hitCluster->GetHits()[0].GetTimeStamp());
          event->AddHitCluster(hitCluster);
       }
    }

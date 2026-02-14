@@ -55,6 +55,8 @@ public:
    TMatrixDSym GetCovMatrixCharge() const;
    TMatrixDSym GetCovMatrixNoWeight() const;
 
+   void SortHitArrayTime();
+
    ClassDefOverride(AtHitClusterFull, 1);
 };
 

@@ -40,7 +40,7 @@ protected:
 
    Double_t fTraceIntegral{-1};     //< Integrated pulse charge of full trace
    Int_t fHitMult{1};               //< Hit multiplicity in the pad where the hit was found
-   Int_t fTimeStamp{0};             //< TB of hit
+   ULong64_t fTimeStamp{0};             //< TB of hit
    Double_t fTimeStampCorr{0};      //< TB of hit using center of gravity
    Double_t fTimeStampCorrInter{0}; //< Interpolated TB of hit
 
@@ -69,7 +69,7 @@ public:
 
    void SetTraceIntegral(Double_t integral) { fTraceIntegral = integral; }
    void SetHitMult(Int_t HitMult) { fHitMult = HitMult; }
-   void SetTimeStamp(Int_t Time) { fTimeStamp = Time; }
+   void SetTimeStamp(ULong64_t Time) { fTimeStamp = Time; }
    void SetTimeStampCorr(Double_t TimeCorr) { fTimeStampCorr = TimeCorr; }
    void SetTimeStampCorrInter(Double_t TimeCorrInter) { fTimeStampCorrInter = TimeCorrInter; }
 
@@ -83,7 +83,7 @@ public:
    Int_t GetPadNum() const { return fPadNum; }
    Double_t GetTraceIntegral() const { return fTraceIntegral; }
    Int_t GetHitMult() const { return fHitMult; }
-   Int_t GetTimeStamp() const { return fTimeStamp; }
+   ULong64_t GetTimeStamp() const { return fTimeStamp; }
    Double_t GetTimeStampCorr() const { return fTimeStampCorr; }
    Double_t GetTimeStampCorrInter() const { return fTimeStampCorrInter; }
    const std::vector<AtHit::MCSimPoint> &GetMCSimPointArray() const { return fMCSimPointArray; }

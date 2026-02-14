@@ -133,5 +133,10 @@ void AtMAGNEXRansacTask::Exec(Option_t *opt)
    ransac.SetChargeThreshold(fChargeThres);
    fPatternEventArray.Delete();
    auto patternEvent = ransac.Solve(fHitClusterEvent);
+
+   auto &tracks = patternEvent.GetTrackCand();
+   for (auto &track: tracks)
+      track.SortHitArrayTime();
+
    new (fPatternEventArray[0]) AtPatternEvent(patternEvent);
 }

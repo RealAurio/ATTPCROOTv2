@@ -1,4 +1,4 @@
-void histogrammer(int runNumber = 298)
+void histogrammer(int runNumber = 38)
 {
    using XYPoint = ROOT::Math::XYPoint;
    using XYZPoint = ROOT::Math::XYZPoint;
@@ -46,6 +46,7 @@ void histogrammer(int runNumber = 298)
 
    // Create a regular root file that can be opened with stand-alone root.
    Int_t eventID{}, trackID{};
+   Long64_t firstTrackTimeStamp{};
    Double_t xRansacEntrance{}, yRansacEntrance{}, zRansacEntrance{}, theta{}, phi{};
    Double_t xRansacRow[5], yRansacRow[5], zRansacRow[5];
 
@@ -53,6 +54,7 @@ void histogrammer(int runNumber = 298)
    TTree *anatree = new TTree("anatree", "TTree with values reconstructed by ATTPCROOTv2");
    anatree->Branch("eventID", &eventID);
    anatree->Branch("trackID", &trackID);
+   anatree->Branch("firstTrackTimeStamp", &firstTrackTimeStamp);
    anatree->Branch("xRansacEntrance", &xRansacEntrance);
    anatree->Branch("yRansacEntrance", &yRansacEntrance);
    anatree->Branch("zRansacEntrance", &zRansacEntrance);
@@ -100,6 +102,8 @@ void histogrammer(int runNumber = 298)
       trackID = -1;
       for (auto &track : tracks) {
          trackID++;
+
+         firstTrackTimeStamp = track.GetHitArray()[0]->GetTimeStamp();
 
          // Access the fitted pattern line in each track.
          const AtPatterns::AtPatternLine *patternLine = dynamic_cast<const AtPatterns::AtPatternLine *>(track.GetPattern());
