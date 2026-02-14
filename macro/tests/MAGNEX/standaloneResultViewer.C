@@ -8,23 +8,23 @@ void standaloneResultViewer(int runNumber = 38)
    TH1F *thetaHist = new TH1F("thetaHist", "thetaHist", 2880, -180, 180);
    TH1F *phiHist = new TH1F("phiHist", "phiHist", 2280, -180, 180);
 
-   std::vector<TH1F *> xRansacRowHist = {new TH1F("xRansacRow1", "xRansacRow1", 600, 0, 300),
+   std::vector<TH1F *> xRansacRowHist = {new TH1F("xRansacRow0", "xRansacRow0", 600, 0, 300),
+                                         new TH1F("xRansacRow1", "xRansacRow1", 600, 0, 300),
                                          new TH1F("xRansacRow2", "xRansacRow2", 600, 0, 300),
                                          new TH1F("xRansacRow3", "xRansacRow3", 600, 0, 300),
-                                         new TH1F("xRansacRow4", "xRansacRow4", 600, 0, 300),
-                                         new TH1F("xRansacRow5", "xRansacRow5", 600, 0, 300)};
+                                         new TH1F("xRansacRow4", "xRansacRow4", 600, 0, 300)};
 
-   std::vector<TH1F *> yRansacRowHist = {new TH1F("yRansacRow1", "yRansacRow1", 800, -100, 300),
+   std::vector<TH1F *> yRansacRowHist = {new TH1F("yRansacRow0", "yRansacRow0", 800, -100, 300),
+                                         new TH1F("yRansacRow1", "yRansacRow1", 800, -100, 300),
                                          new TH1F("yRansacRow2", "yRansacRow2", 800, -100, 300),
                                          new TH1F("yRansacRow3", "yRansacRow3", 800, -100, 300),
-                                         new TH1F("yRansacRow4", "yRansacRow4", 800, -100, 300),
-                                         new TH1F("yRansacRow5", "yRansacRow5", 800, -100, 300)};
+                                         new TH1F("yRansacRow4", "yRansacRow4", 800, -100, 300)};
 
-   std::vector<TH1F *> zRansacRowHist = {new TH1F("zRansacRow1", "zRansacRow1", 120, -10, 110),
+   std::vector<TH1F *> zRansacRowHist = {new TH1F("zRansacRow0", "zRansacRow0", 120, -10, 110),
+                                         new TH1F("zRansacRow1", "zRansacRow1", 120, -10, 110),
                                          new TH1F("zRansacRow2", "zRansacRow2", 120, -10, 110),
                                          new TH1F("zRansacRow3", "zRansacRow3", 120, -10, 110),
-                                         new TH1F("zRansacRow4", "zRansacRow4", 120, -10, 110),
-                                         new TH1F("zRansacRow5", "zRansacRow5", 120, -10, 110)};
+                                         new TH1F("zRansacRow4", "zRansacRow4", 120, -10, 110)};
 
    // Open the results file and load the data.
    Int_t eventID{}, trackID{};
