@@ -1,0 +1,4 @@
+
+# DO NOT DELETE
+./kine_C.so: /home/astinson/attpc/install/include/root/RVersion.h /home/astinson/attpc/install/include/root/RConfig.h /home/astinson/attpc/install/include/root/TClass.h /home/astinson/attpc/install/include/root/TDictAttributeMap.h /home/astinson/attpc/install/include/root/TInterpreter.h /home/astinson/attpc/install/include/root/TROOT.h /home/astinson/attpc/install/include/root/TBuffer.h /home/astinson/attpc/install/include/root/TMemberInspector.h /home/astinson/attpc/install/include/root/TError.h /home/astinson/attpc/install/include/root/RtypesImp.h /home/astinson/attpc/install/include/root/TIsAProxy.h /home/astinson/attpc/install/include/root/TFileMergeInfo.h /home/astinson/attpc/install/include/root/TCollectionProxyInfo.h /home/astinson/attpc/install/bin/rootcling
+kine_C__ROOTBUILDVERSION= 6.26/10

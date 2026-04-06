@@ -2,6 +2,8 @@
 #define AtSITASK_H
 
 #include "AtPSA.h"
+#include "AtPSASi.h"
+#include "AtSiMap.h"
 
 #include <FairTask.h>
 
@@ -22,12 +24,13 @@ private:
    TClonesArray *fRawEventArray{nullptr};
    TClonesArray fSiEventArray;
 
-   std::unique_ptr<AtPSA> fPSA;
+   std::unique_ptr<AtPSASi> fPSA;
+   std::unique_ptr<AtSiMap> fSiMap;
 
    Bool_t fIsPersistence{false};
 
 public:
-   AtSiTask(std::unique_ptr<AtPSA> psaMethod);
+   AtSiTask(std::unique_ptr<AtPSASi> psaMethod, std::unique_ptr<AtSiMap>);
    ~AtSiTask() = default;
 
    void SetPersistence(Bool_t value);

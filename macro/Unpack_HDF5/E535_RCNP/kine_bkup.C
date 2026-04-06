@@ -17,6 +17,7 @@ void kine()
       c->SetPoint(4, -1e9, -1e9);
       return c;
    };
+   //   TString outfname="./canvas_kine.root";
    //   FILE NAME
    int runStart, runEnd;
    std::cout << "Run Start: ";
@@ -24,19 +25,7 @@ void kine()
    std::cout << "Run End: ";
    std::cin >> runEnd;
 
-
-   // File input. There has to be a more compressed way to do this. As in, specify 3000 and then number of files
-   // TO DO: 
-   // create loop that makes an array the size of the start and end points then fills with iterative numbers to loop over. That way you don't 
-   // have to keep changing this line
-   //std::vector runNums = {3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 3009, 3010, 3011};
-   //std::vector runNums = {5159};
-   std::vector<int> runNums;
-   for (int i=runStart; i<= runEnd; ++i) {
-	   runNums.push_back(i); 
-   }
-
-   TString outfname= Form("kineC_hists_%dto%d_stripsTest.root", runStart, runEnd); 
+   TString outfname= Form("kineC_hists_%dto%d_stripsTest.root", runStart, runEnd); //HERE AMBER change name to match files completed
    TFile *outfile=new TFile(outfname,"recreate");
 
    // AtMap to check if a hit belong to a big pad or small pad.
@@ -204,9 +193,7 @@ void kine()
    TH2F *histGaggPIDADCMaxSiB = new TH2F("histGaggPIDADCMaxSiB", "histGaggPIDADCMaxSiB", 5000, 0, 10000, 4000, 0, 4000);
 
    TH1F *histSiStrip = new TH1F("histSiStrip", "histSiStrip;Strip;Counts", 550, 0, 550);
-   TH2F *histSiStripvE = new TH2F("histSiStripvE", "histSiStripvE;Strip;E", 550, 0, 550, 5000, 0, 5000);
-   TH2F *histSiStripvMaxADC = new TH2F("histSiStripvMaxADC", "histSiStripvMaxADC;Strip;ADC", 550, 0, 550, 5000, 0, 5000);
-   TH2F *Si1Position = new TH2F("Si1Position", "Si1Position; X (strip); Y (strip)", 128, 0, 128, 128, 0, 128);
+   TH2F *histSiStripvE = new TH2F("histSiStripvE", "histSiStripvE;Strip;E", 550, 0, 550, 5000, 0, 12000);
 
    // All events.
 
@@ -216,7 +203,9 @@ void kine()
 			  3046,3047,3048,3049,3050,3051,3052,3053,3054,3055,3056,3057,3058,3059,3060,
 			  3061,3062,3063,3064};
 */
-    //Turning on Calibration Mode
+   // File input. There has to be a more compressed way to do this. As in, specify 3000 and then number of files
+    //std::vector runNums = {3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 3009, 3010, 3011};
+    std::vector runNums = {3110};
     bool calibrationMode = false;
     if (runNums[0] > 5000) {
 	    calibrationMode = true;
@@ -224,6 +213,10 @@ void kine()
     }
 
    for (int runNum: runNums) {
+      /*if (runNum > 5000) {
+	      calibrationMode = true;
+	      std::cout << "CALIBRATION MODE ON" << std::endl;
+      }*/
       // Open the digitalization file and get the TTree.
       TString unpackFileName = TString::Format("/home/astinson/e535rawdata/UnpackerTestOutput/run_%04d.root", runNum);
       TFile *unpackFile = new TFile(unpackFileName, "READ");
@@ -275,18 +268,19 @@ void kine()
 
          histSiMultiplicityBack1->Fill(multiplicityBack1);
          histSiMultiplicityBack2->Fill(multiplicityBack2);
-	 
-	 Int_t strip1X = siEvent->GetXStrip1();
-	 Int_t strip1Y = siEvent->GetYStrip1();
-	 Float_t front1E = siEvent->GetEnergyFront1();
-	 Float_t back1E = siEvent->GetEnergyBack1();
-
-	 if (front1E > 20 && back1E > 20) {
-		 Si1Position->Fill(strip1X, strip1Y);
+	 /*if (multiplicityFront1 == 1) {
+		 for (int j=0; j<4; ++j) {
+			Int_t strip = siEvent->GetStripFront1(j);
+			if (strip >= 0) {
+				histSiStrip->Fill(strip);
+			}
+		 } 
+	 }*/
+	 if (calibrationMode) {
+		 //if (multiplicityFront1 != 1) continue;
+		 //if (multiplicityFront2 != 1) continue;
 	 }
-	 if (calibrationMode) { //To-Do: likely will need to change this depending on the calibration file being used.
-		 if (multiplicityFront1 != 1 || multiplicityBack1 != 1) continue;
-	 }
+         //if (multiplicityFront1 != 1 || multiplicityFront2 != 1) continue;
 	 else {
 		 if ((multiplicityFront1 != 1 && multiplicityBack1 != 1) || (multiplicityFront2 != 1 && multiplicityBack2 != 1)) continue;
 	 }
@@ -299,7 +293,6 @@ void kine()
 	 	histSi1FrontE->Fill(EFront1);
 		histSiStrip->Fill(strip);
 		histSiStripvE->Fill(strip, EFront1);
-		histSiStripvMaxADC->Fill(strip, maxADCFront1);
 	 }
 
 	 for (int j=0; j<4; ++j) {
@@ -310,7 +303,6 @@ void kine()
 		histSi2FrontE->Fill(EFront2);
 		histSiStrip->Fill(strip);
 		histSiStripvE->Fill(strip, EFront2);
-		histSiStripvMaxADC->Fill(strip, maxADCFront2);
 	 }
 
 	 for (int j=0; j<4; ++j) {
@@ -321,7 +313,6 @@ void kine()
 		histSi1BackE->Fill(EBack1);
 		histSiStrip->Fill(strip);
 		histSiStripvE->Fill(strip, EBack1);
-		histSiStripvMaxADC->Fill(strip, maxADCBack1);
 	 }
 
 	 for (int j=0; j<4; ++j) {
@@ -332,8 +323,28 @@ void kine()
 		histSi2BackE->Fill(EBack2);
 		histSiStrip->Fill(strip);
 		histSiStripvE->Fill(strip, EBack2);
-		histSiStripvMaxADC->Fill(strip, maxADCBack2);
 	 }
+		
+	 
+	 
+         /*Double_t maxADCFront2 = siEvent->GetADCMaxFront2(j);
+
+         Double_t EFront2 = siEvent->GetEFront2(j);
+	 Double_t EBack1 = siEvent->GetEBack1(j);
+	 Double_t EBack2 = siEvent->GetEBack2(j);
+
+	 histSi1BackE->Fill(EBack1);
+	 histSi2FrontE->Fill(EFront2);
+	 histSi2BackE->Fill(EBack2);
+	 histSi1V2FrontE->Fill(EFront1, EFront2);
+         histSiPIDTraceIntegral->Fill(EFront2, EFront1);
+         histSiPIDADCMax->Fill(maxADCFront2, maxADCFront1);
+
+	 histSiStripvE->Fill(strip, EFront2);
+	 histSiStripvE->Fill(strip, EBack1);
+	 histSiStripvE->Fill(strip, EBack2);
+		}
+	 }*/
 
 
          //if (!cutSiN->IsInside(maxADCFront2, maxADCFront1)) continue;

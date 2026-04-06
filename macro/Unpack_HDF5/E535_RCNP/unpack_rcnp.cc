@@ -3,14 +3,38 @@
 #define cNORMAL "\033[0m"
 #define cGREEN "\033[1;32m"
 
+#include <stdlib.h>
+#include <iostream>
+
+#include "TStopwatch.h"
+
+#include "FairRunAna.h"
+#include "FairParAsciiFileIo.h"
+#include "FairRuntimeDb.h"
+
+#include "AtPSASi.h"
+#include "AtSiTask.h"
+#include "AtGaggTask.h"
+#include "AtFilterSubtraction.h"
+#include "AtFilterTask.h"
+#include "AtPSAMax.h"
+#include "AtPSAtask.h"
+#include "AtEDistortionModel.h"
+#include "AtSpaceChargeCorrectionTask.h"
+#include "AtRansacTask.h"
+#include "AtRawEvent.h"
+#include "AtTpcMap.h"
+#include "AtFRIBSiUnpacker.h"
+#include "AtUnpackTask.h"
 
 bool reduceFunc(AtRawEvent *evt){
   return (evt->GetNumPads() > 0) && evt->IsGood();
 }
 
-void unpack_rcnp(int run_num = 2011){
+int main(int argc, const char **argv){
+  int run_num = std::atoi(argv[1]);
   // Load the library for unpacking and reconstruction
-  gSystem->Load("/home/astinson/attpc/install/lib/libAtReconstruction.so");
+  //gSystem->Load("/home/astinson/attpc/ATTPCROOTv2/build/lib/libAtReconstruction.so");
 
   TStopwatch timer;
   timer.Start();
@@ -19,24 +43,19 @@ void unpack_rcnp(int run_num = 2011){
   TString parameterFile = "RCNP/ATTPC.E535.par";
   TString mappath = "";
   TString filepath = "/home/astinson/e535rawdata/h5/";
-  if (run_num > 5000) {
-   filepath = "/home/astinson/e535rawdata/h5Cal/";
-  }
   TString fileExt = ".h5";
   TString outputpath = "/home/astinson/e535rawdata/UnpackerTestOutput/";
 
   TString inputFile = filepath + fileName + fileExt;
   TString scriptfile = "rcnp_map_size.xml";
-  TString siMapFile = "rcnp_si_map.xml";
-  TString beamPadsFile = "BeamPads_RCNP.csv";
   TString dir = getenv("VMCWORKDIR");
   TString mapDir = dir + "/scripts/" + scriptfile;
   TString scriptdir = dir + "/scripts/" + scriptfile;
-  TString simapdir = dir + "/scripts/" + siMapFile;
-  TString beamPadsDir = dir + "/scripts/" + beamPadsFile;
   TString dataDir = dir + "/macro/data/";
   TString geomDir = dir + "/geometry/";
-  gSystem->Setenv("GEOMPATH", geomDir.Data());
+  TString cmd = TString::Format("GEOMPATH=%s", geomDir.Data());
+  char *cmd_str = (char*)cmd.Data();
+  putenv(cmd_str);
   TString outputFile = outputpath + fileName + ".root";
   TString loggerFile = dataDir + "ATTPCLog.log";
   TString digiParFile = dir + "/parameters/" + parameterFile;
@@ -65,10 +84,6 @@ void unpack_rcnp(int run_num = 2011){
   auto fAtMapPtr = std::make_shared<AtTpcMap>();
   fAtMapPtr->ParseXMLMap(mapDir.Data());
   fAtMapPtr->GeneratePadPlane();
-  fAtMapPtr->InhibitBeamPads(beamPadsDir); //pad veto update
-
-  auto fAtSiPtr = std::make_unique<AtSiMap>();
-  fAtSiPtr->ParseXMLMap(simapdir.Data());
 
   //auto unpacker = std::make_unique<AtHDFUnpacker>(fAtMapPtr);
   //auto unpacker = std::make_unique<AtFRIBLinkedHDFUnpacker>(fAtMapPtr);
@@ -84,7 +99,7 @@ void unpack_rcnp(int run_num = 2011){
   auto psaSi = std::make_unique<AtPSASi>();
   psaSi->SetThreshold(thresholdSi);
 
-  AtSiTask *siTask = new AtSiTask(std::move(psaSi), std::move(fAtSiPtr));
+  AtSiTask *siTask = new AtSiTask(std::move(psaSi));
   siTask->SetPersistence(kTRUE);
 
   auto thresholdGagg = 10;
@@ -201,9 +216,9 @@ void unpack_rcnp(int run_num = 2011){
   timer.Stop();
   Double_t rtime = timer.RealTime();
   Double_t ctime = timer.CpuTime();
-  cout << endl << endl;
-  cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << endl;
-  cout << endl;
+  std::cout << std::endl << std::endl;
+  std::cout << "Real time " << rtime << " s, CPU time " << ctime << " s" << std::endl;
+  std::cout << std::endl;
   // ------------------------------------------------------------------------
 }
 
