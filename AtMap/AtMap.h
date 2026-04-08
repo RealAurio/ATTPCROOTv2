@@ -54,12 +54,6 @@ protected:
 
    void drawPadPlane();
 
-   // Calibration related members
-   std::function<double(double *, double *)> fCalibrationFunction; // Function to be used as ADC->ELoss calibration.
-   std::map<int, std::vector<double>>
-      fCalibrationParametersMap;    // Map to vector of parameters that the function may need.
-   int fCalibrationParameterNumber; // Amount of parameters the function needs.
-
 public:
    AtMap();
    ~AtMap() = default;
@@ -86,7 +80,7 @@ public:
 
    Bool_t ParseXMLMap(Char_t const *xmlfile);
    void ParseMapList(TXMLNode *node);
-   void ParseAtTPCMap(TXMLNode *node);
+   virtual void ParseAtTPCMap(TXMLNode *node);
    Bool_t DumpAtTPCMap();
    AtPadReference GetPadRef(int padNum) const;
    bool AddAuxPad(const AtPadReference &ref, std::string auxName);
@@ -94,11 +88,6 @@ public:
    bool IsFPNchannel(const AtPadReference &ref) const;
    AtPadReference GetNearestFPN(int padNum) const;
    AtPadReference GetNearestFPN(const AtPadReference &ref) const;
-
-   Bool_t ParseCalibrationParameters(TString calibrationFilePath, int calibrationParameterNumber);
-   void SetCalibrationFunction(std::function<double(double *, double *)> function) { fCalibrationFunction = function; }
-   double GetCalibratedELoss(int padID, double ADC) const;
-   bool IsCalibrationSet() const;
 
    std::string GetAuxName(const AtPadReference &ref) const;
 
@@ -120,7 +109,7 @@ public:
    enum class InhibitType { kNone = 0, kLowGain = 1, kXTalk = 2, kTotal = 3, kBadPad = 4 };
 #pragma GCC diagnostic pop
 
-   ClassDefOverride(AtMap, 6);
+   ClassDefOverride(AtMap, 5);
 };
 
 std::ostream &operator<<(std::ostream &os, const AtMap::InhibitType &t);

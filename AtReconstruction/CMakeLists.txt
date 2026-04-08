@@ -20,6 +20,7 @@ ${CMAKE_SOURCE_DIR}/AtReconstruction/AtPatternRecognition/triplclust/src/hclust
 ${CMAKE_SOURCE_DIR}/AtReconstruction/AtPatternRecognition/triplclust/src/kdtree
 
 ${CMAKE_SOURCE_DIR}/AtReconstruction/AtPatternModification
+${CMAKE_SOURCE_DIR}/AtMap
 )
 
 Set(DEPENDENCIES
@@ -79,7 +80,6 @@ set(SRCS
   AtHDF5WriteTask.cxx
   AtMacroTask.cxx
   AtCopyAuxTreeTask.cxx
-  AtICTask.cxx
 
   AtSiTask.cxx
   AtGaggTask.cxx

@@ -28,14 +28,12 @@
 #pragma link C++ class AtTrackingEvent + ;
 #pragma link C++ class AtProtoQuadrant + ;
 #pragma link C++ class AtTrack + ;
+#pragma link C++ struct AtTrack::BraggCurve + ;
 #pragma link C++ class AtFittedTrack + ;
 #pragma link C++ class AtFissionEvent + ;
 #pragma link C++ class AtGenericTrace + ;
 #pragma link C++ class AtSiEvent + ;
 #pragma link C++ class AtGaggEvent + ;
-#pragma link C++ class AtENCourseEvent + ;
-#pragma link C++ class AtPPACPair + ;
-#pragma link C++ class AtICEvent + ;
 
 #pragma link C++ class AtPatterns::AtPattern + ;
 #pragma link C++ class AtPatterns::AtPatternLine + ;
