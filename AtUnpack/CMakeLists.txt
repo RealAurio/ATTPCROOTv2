@@ -35,6 +35,7 @@ set(SRCS
   AtFRIBSiOnlyUnpacker.cxx
   AtROOTUnpacker.cxx
   AtGRAWUnpacker.cxx
+  AtMergeENCourseTask.cxx
 
   GETDecoder2/GETDecoder2.cxx
   GETDecoder2/GETFrameInfo.cxx
@@ -47,6 +48,7 @@ set(SRCS
   GETDecoder2/GETLayeredFrame.cxx
   GETDecoder2/GETMath2.cxx
   GETDecoder2/GETFileChecker.cxx
+
   )
 
 generate_target_and_root_library(${LIBRARY_NAME}

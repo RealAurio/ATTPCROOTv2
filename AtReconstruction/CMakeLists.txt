@@ -80,6 +80,7 @@ set(SRCS
   AtHDF5WriteTask.cxx
   AtMacroTask.cxx
   AtCopyAuxTreeTask.cxx
+  AtICTask.cxx
 
   AtSiTask.cxx
   AtGaggTask.cxx
