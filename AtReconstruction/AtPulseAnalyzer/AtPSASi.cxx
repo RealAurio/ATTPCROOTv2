@@ -119,6 +119,9 @@ AtPSASi::HitVector AtPSASi::AnalyzeGenTrace(AtGenericTrace *genTrace)
 
    std::array<Double_t, 256> floatADC;
    std::vector<Double_t> floatADCVector = genTrace->GetADC();
+   //FOR GAGG
+   //for (int i = 0; i < 256; i++)
+   // floatADC[i] = floatADCVector[i];
    //std::cout << "GAGG ADC entries: " << floatADCVector.size() <<  std::endl;
    /*if (floatADCVector.size() >= 256) {
       for (int i = 0; i < 256; i++)
