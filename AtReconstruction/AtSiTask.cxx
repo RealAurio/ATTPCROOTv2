@@ -5,6 +5,9 @@
 #include "AtRawEvent.h"
 #include "AtPad.h"
 #include "AtAuxPad.h"
+#include "AtPad.h"
+#include "AtRawEvent.h"
+#include "AtSiEvent.h"
 
 #include <FairLogger.h>
 #include <FairRootManager.h> // for FairRootManager
@@ -12,9 +15,9 @@
 #include <TClonesArray.h>
 #include <TObject.h> // for TObject
 
-#include <utility> // for move
-#include <string>
 #include <map>
+#include <string>
+#include <utility> // for move
 
 constexpr auto cRED = "\033[1;31m";
 constexpr auto cYELLOW = "\033[1;33m";

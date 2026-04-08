@@ -39,6 +39,9 @@ set(SRCS
   AtGenericTrace.cxx
   AtSiEvent.cxx
   AtGaggEvent.cxx
+  AtENCourseEvent.cxx
+  AtPPACPair.cxx
+  AtICEvent.cxx
 
   AtProtoQuadrant.cxx
   AtTrack.cxx

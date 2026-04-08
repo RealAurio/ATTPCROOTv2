@@ -127,6 +127,8 @@ AtPSASi::HitVector AtPSASi::AnalyzeGenTrace(AtGenericTrace *genTrace)
       LOG(error) << "There are not 256 ADC values in the GAGG trace. Skipping!";
       return {};
    }*/
+   for (int i = 0; i < 256; i++)
+      floatADC[i] = floatADCVector[i];
 
    // Get baseline value.
    double baseline{};
