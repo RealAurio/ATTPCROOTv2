@@ -17,10 +17,12 @@ AtGaggEvent::AtGaggEvent(const AtGaggEvent &copy)
    for (int i = 0; i < 25; i++) {
       fE1[i] = copy.fE1[i];
       fADCMax1[i] = copy.fADCMax1[i];
+      fID1[i] = copy.fID1[i];
    }
    for (int i = 0; i < 16; i++) {
       fE2[i] = copy.fE2[i];
       fADCMax2[i] = copy.fADCMax2[i];
+      fID2[i] = copy.fID2[i];
    }
 }
 
@@ -36,10 +38,12 @@ void AtGaggEvent::Clear(Option_t *opt)
    for (int i = 0; i < 25; i++) {
       fE1[i] = -1;
       fADCMax1[i] = -1;
+      fID1[i] = -1;
    }
    for (int i = 0; i < 16; i++) {
       fE2[i] = -1;
       fADCMax2[i] = -1;
+      fID2[i] = -1;
    }
 
    fMultiplicity1 = 0;

@@ -23,6 +23,10 @@ private:
                             -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
    Double_t fADCMax2[16] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
 
+   Int_t fID1[25] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+                       -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+   Int_t fID2[16] = {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1};
+
    Int_t fMultiplicity1 = 0;
    Int_t fMultiplicity2 = 0;
 
@@ -44,6 +48,9 @@ public:
       swap(first.fADCMax1, second.fADCMax1);
       swap(first.fADCMax2, second.fADCMax2);
 
+      swap(first.fID1, second.fID1);
+      swap(first.fID2, second.fID2);
+
       swap(first.fMultiplicity1, second.fMultiplicity1);
       swap(first.fMultiplicity2, second.fMultiplicity2);
    }
@@ -59,11 +66,17 @@ public:
    void SetMultiplicity1(Int_t value) { fMultiplicity1 = value; }
    void SetMultiplicity2(Int_t value) { fMultiplicity2 = value; }
 
+   void SetID1(Int_t idx, Int_t value) { fID1[idx] = value; }
+   void SetID2(Int_t idx, Int_t value) { fID2[idx] = value; }
+
    Double_t GetE1(Int_t idx) { return fE1[idx]; }
    Double_t GetE2(Int_t idx) { return fE2[idx]; }
 
    Double_t GetADCMax1(Int_t idx) { return fADCMax1[idx]; }
    Double_t GetADCMax2(Int_t idx) { return fADCMax2[idx]; }
+
+   Double_t GetID1(Int_t idx) { return fID1[idx]; }
+   Double_t GetID2(Int_t idx) { return fID2[idx]; }
 
    Int_t GetMultiplicity1() { return fMultiplicity1; }
    Int_t GetMultiplicity2() { return fMultiplicity2; }

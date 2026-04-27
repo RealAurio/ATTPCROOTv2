@@ -100,7 +100,6 @@ void AtSiTask::Exec(Option_t *opt)
    int idx3{};
    int idx4{};
 
-   std::cout << "======== Si event ======" << std::endl;
    for (auto &auxPadMapEntry : auxPadsMap) {
       auto auxPadName = auxPadMapEntry.first;
       auto auxPad = auxPadMapEntry.second;

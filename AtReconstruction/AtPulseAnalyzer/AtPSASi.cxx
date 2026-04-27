@@ -20,6 +20,30 @@
 // #endif
 using XYZPoint = ROOT::Math::XYZPoint;
 
+AtPSASi::AtPSASi() : AtPSA() { 
+  low_bl_region[0] = -50;
+  low_bl_region[1] = -30;
+  hi_bl_region[0] = 80;
+  hi_bl_region[1] = 100;
+  energy_integral[0] = -10;
+  energy_integral[1] = 15;
+}
+
+void AtPSASi::SetLowBLRegion(int low, int hi) {
+  low_bl_region[0] = low;
+  low_bl_region[1] = hi;
+}
+
+void AtPSASi::SetHighBLRegion(int low, int hi) {
+  hi_bl_region[0] = low;
+  hi_bl_region[1] = hi;
+}
+
+void AtPSASi::SetEnergyIntegral(int low, int hi) {
+  energy_integral[0] = low;
+  energy_integral[1] = hi;
+}
+
 AtPSASi::HitVector AtPSASi::AnalyzePad(AtPad *pad)
 {
    XYZPoint pos(0, 0, 0);
@@ -40,15 +64,13 @@ AtPSASi::HitVector AtPSASi::AnalyzePad(AtPad *pad)
       (*maxAdcIt) = -(*maxAdcIt);
    }
 
-   int low_bl_gate[2] = {-50, -30};
-   int hi_bl_gate[2] = {80, 100};
    float count = 0;
-   for (int i = std::max(20, maxAdcIdx + low_bl_gate[0]); i < std::min(maxAdcIdx + low_bl_gate[1], 500);
+   for (int i = std::max(20, maxAdcIdx + low_bl_region[0]); i < std::min(maxAdcIdx + low_bl_region[1], 500);
         i++) { // more baseline added
       baseline += floatADC[i];
       count += 1;
    }
-   for (int i = std::max(20, maxAdcIdx + hi_bl_gate[0]); i < std::min(maxAdcIdx + hi_bl_gate[1], 500);
+   for (int i = std::max(20, maxAdcIdx + hi_bl_region[0]); i < std::min(maxAdcIdx + hi_bl_region[1], 500);
         i++) { // more baseline added
       baseline += floatADC[i];
       count += 1;
@@ -64,7 +86,6 @@ AtPSASi::HitVector AtPSASi::AnalyzePad(AtPad *pad)
    LOG(debug) << "========== float ADC array max index: " << maxAdcIdx << " ==========";
 
    // Calculation of the mean value of the peak time by interpolating the pulse
-   int energy_integral[2] = {-10, 15}; // integral window around maximum
    Double_t timemax = 0.5 * (floatADC[maxAdcIdx - 1] - floatADC[maxAdcIdx + 1]) /
                       (floatADC[maxAdcIdx - 1] + floatADC[maxAdcIdx + 1] - 2 * floatADC[maxAdcIdx]);
    Double_t TBCorr = getTBCorr(floatADC, maxAdcIdx);
@@ -123,39 +144,56 @@ AtPSASi::HitVector AtPSASi::AnalyzeGenTrace(AtGenericTrace *genTrace)
    std::array<Double_t, 256> floatADC;
    std::vector<Double_t> floatADCVector = genTrace->GetADC();
    // FOR GAGG
-   for (int i = 0; i < 256; i++)
-      floatADC[i] = floatADCVector[i];
+   //for (int i = 0; i < 256; i++)
+   //   floatADC[i] = floatADCVector[i];
    // std::cout << "GAGG ADC entries: " << floatADCVector.size() <<  std::endl;
-   /*if (floatADCVector.size() >= 256) {
-      for (int i = 0; i < 256; i++)
+   if (floatADCVector.size() >= 256) {
+      for (int i = 0; i < 256; i++) {
          floatADC[i] = floatADCVector[i];
+      }
    } else {
       LOG(error) << "There are not 256 ADC values in the GAGG trace. Skipping!";
       return {};
-   }*/
-
-   // Get baseline value.
-   double baseline{};
-   for (int i = 10; i < 20; i++)
-      baseline += floatADC[i];
-   baseline /= 10;
-   // std::cout << "baseline = " << baseline <<  std::endl;
+   }
 
    Double_t *maxAdcIt{nullptr};
    Double_t charge{-999};
+   Double_t baseline{0};
    if (fPositivePolarity) {
       maxAdcIt = std::max_element(floatADC.begin() + 20, floatADC.end() - 12);
-      charge = *maxAdcIt - baseline;
+      charge = *maxAdcIt;
    } else {
       maxAdcIt = std::min_element(floatADC.begin() + 20, floatADC.end() - 12);
-      charge = -(*maxAdcIt - baseline);
+      charge = -(*maxAdcIt);
    }
    Int_t maxAdcIdx = std::distance(
       floatADC.begin(),
       maxAdcIt); // To-Do: might need to utilize similar trace intergal calculation as used in Si. Unsure yet.
-   // std::cout << " Max ADC = " << *maxAdcIt << std::endl;
 
-   // std::cout << " Diff ADC = " << *maxAdcIt - baseline << std::endl;
+   float count = 0;
+   for (int i = std::max(20, maxAdcIdx + low_bl_region[0]); i < std::min(maxAdcIdx + low_bl_region[1], (int)(floatADCVector.size()-12));
+        i++) { // more baseline added
+      baseline += floatADC[i];
+      count += 1;
+   }
+   for (int i = std::max(20, maxAdcIdx + hi_bl_region[0]); i < std::min(maxAdcIdx + hi_bl_region[1], (int)(floatADCVector.size()-12));
+        i++) { // more baseline added
+      baseline += floatADC[i];
+      count += 1;
+   }
+   baseline /= count;
+   LOG(debug) << "Baseline calculated: " << baseline;
+   charge = *maxAdcIt - baseline;
+
+   //std::cout << " Max ADC = " << *maxAdcIt << std::endl;
+
+   //std::cout << " Diff ADC = " << *maxAdcIt - baseline << std::endl;
+
+   //if (abs(*maxAdcIt - baseline) > 100) {
+   //   for (int i=0; i<256; ++i) {
+   //     std::cout << i << "  " << floatADC[i] << std::endl;
+   //   }
+   //}
 
    if (!shouldSaveHit(charge, fThreshold, maxAdcIdx)) {
       LOG(debug) << "GAGG trace did not pass threshold.";
@@ -165,7 +203,10 @@ AtPSASi::HitVector AtPSASi::AnalyzeGenTrace(AtGenericTrace *genTrace)
    // Calculation of the mean value of the peak time by interpolating the pulse
    Double_t timemax = 0.5 * (floatADC[maxAdcIdx - 1] - floatADC[maxAdcIdx + 1]) /
                       (floatADC[maxAdcIdx - 1] + floatADC[maxAdcIdx + 1] - 2 * floatADC[maxAdcIdx]);
-   Double_t QHitTot = std::abs(std::accumulate(floatADC.begin(), floatADC.end(), 0) - baseline * floatADC.size());
+   Double_t QHitTot = std::abs(std::accumulate(floatADC.begin() + maxAdcIdx + energy_integral[0],
+                                               floatADC.begin() + maxAdcIdx + energy_integral[1], 0) /
+                                  (energy_integral[1] - energy_integral[0]) -
+                               baseline);
 
    auto hit = std::make_unique<AtHit>(0, pos, charge);
 

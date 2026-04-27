@@ -23,6 +23,13 @@ AtGaggTask::AtGaggTask(std::unique_ptr<AtPSASi> psa)
    : fInputBranchName("AtRawEvent"), fOutputBranchName("AtGaggEvent"), fGaggEventArray(TClonesArray("AtGaggEvent", 1)),
      fPSA(std::move(psa)), fIsPersistence(kFALSE)
 {
+  fGaggMap = std::make_unique<AtGAGGMap>();
+}
+
+AtGaggTask::AtGaggTask(std::unique_ptr<AtPSASi> psa, std::unique_ptr<AtGAGGMap> gaggmap)
+   : fInputBranchName("AtRawEvent"), fOutputBranchName("AtGaggEvent"), fGaggEventArray(TClonesArray("AtGaggEvent", 1)),
+     fPSA(std::move(psa)), fGaggMap(std::move(gaggmap)), fIsPersistence(kFALSE)
+{
 }
 
 void AtGaggTask::SetPersistence(Bool_t value)
@@ -88,6 +95,8 @@ void AtGaggTask::Exec(Option_t *opt)
    int idx2{};
    for (auto &genTrace : genTraces) {
 
+      AtPadReference padRef = {std::atoi(genTrace->GetName().c_str()),0,0,genTrace->GetTraceID()};
+      int GaggID = fGaggMap->GetPadNum(padRef);
       auto pseudoHits = fPSA->AnalyzeGenTrace(genTrace.get());
       double traceCharge{};
       double maxADC{};
@@ -99,9 +108,11 @@ void AtGaggTask::Exec(Option_t *opt)
 
       if (idx1 < 25) {
          gaggEvent->SetE1(idx1, traceCharge);
+         gaggEvent->SetID1(idx1, GaggID);
          gaggEvent->SetADCMax1(idx1++, maxADC);
       } else if (idx2 < 16) {
          gaggEvent->SetE2(idx2, traceCharge);
+         gaggEvent->SetID2(idx2, GaggID);
          gaggEvent->SetADCMax2(idx2++, maxADC);
       }
 
