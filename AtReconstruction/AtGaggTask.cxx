@@ -100,15 +100,18 @@ void AtGaggTask::Exec(Option_t *opt)
       auto pseudoHits = fPSA->AnalyzeGenTrace(genTrace.get());
       double traceCharge{};
       double maxADC{};
+      int timestamp{};
       if (pseudoHits.size()) {
          traceCharge = pseudoHits[0]->GetTraceIntegral();
          maxADC = pseudoHits[0]->GetCharge();
+         timestamp = pseudoHits[0]->GetTimeStamp();
       } else
          continue;
 
       if (idx1 < 25) {
          gaggEvent->SetE1(idx1, traceCharge);
          gaggEvent->SetID1(idx1, GaggID);
+         gaggEvent->SetTS1(idx1, timestamp);
          gaggEvent->SetADCMax1(idx1++, maxADC);
       } else if (idx2 < 16) {
          gaggEvent->SetE2(idx2, traceCharge);

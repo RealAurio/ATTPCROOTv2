@@ -150,6 +150,11 @@ AtPSASi::HitVector AtPSASi::AnalyzeGenTrace(AtGenericTrace *genTrace)
    if (floatADCVector.size() >= 256) {
       for (int i = 0; i < 256; i++) {
          floatADC[i] = floatADCVector[i];
+         if (i>0) {
+           if (floatADC[i-1] > 3500 && floatADC[i] < (floatADC[i-1]-4096+500)) {
+             floatADC[i] += 4096; //overflow
+           }
+         }
       }
    } else {
       LOG(error) << "There are not 256 ADC values in the GAGG trace. Skipping!";
@@ -185,15 +190,22 @@ AtPSASi::HitVector AtPSASi::AnalyzeGenTrace(AtGenericTrace *genTrace)
    LOG(debug) << "Baseline calculated: " << baseline;
    charge = *maxAdcIt - baseline;
 
-   //std::cout << " Max ADC = " << *maxAdcIt << std::endl;
+   /*
+   if (std::atoi(genTrace->GetName().c_str())==1906 && genTrace->GetTraceID()==6) {
+     std::cout << " Max ADC = " << *maxAdcIt << std::endl;
+     std::cout << "Baseline calculated: " << baseline;
+     std::cout << " Diff ADC = " << *maxAdcIt - baseline << std::endl;
 
-   //std::cout << " Diff ADC = " << *maxAdcIt - baseline << std::endl;
-
-   //if (abs(*maxAdcIt - baseline) > 100) {
-   //   for (int i=0; i<256; ++i) {
-   //     std::cout << i << "  " << floatADC[i] << std::endl;
-   //   }
-   //}
+     std::ofstream ofile("traces.dat", std::ios::app);
+     if (abs(*maxAdcIt - baseline) > 50) {
+       for (int i=0; i<256; ++i) {
+         ofile << floatADC[i] << "  ";
+       }
+       ofile << std::endl;
+     }
+     ofile.close();
+   }
+   */
 
    if (!shouldSaveHit(charge, fThreshold, maxAdcIdx)) {
       LOG(debug) << "GAGG trace did not pass threshold.";
