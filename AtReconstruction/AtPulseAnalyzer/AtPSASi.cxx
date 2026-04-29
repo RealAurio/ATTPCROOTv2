@@ -30,6 +30,7 @@ AtPSASi::AtPSASi() : AtPSA() {
   hi_bl_region[1] = 100;
   energy_integral[0] = -10;
   energy_integral[1] = 15;
+  fitClipped = false;
 }
 
 void AtPSASi::SetLowBLRegion(int low, int hi) {
@@ -46,6 +47,8 @@ void AtPSASi::SetEnergyIntegral(int low, int hi) {
   energy_integral[0] = low;
   energy_integral[1] = hi;
 }
+
+void AtPSA::SetFitClipped(bool fit) { fitClipped = fit; }
 
 AtPSASi::HitVector AtPSASi::AnalyzePad(AtPad *pad)
 {
@@ -269,7 +272,7 @@ AtPSASi::HitVector AtPSASi::AnalyzeGenTrace(AtGenericTrace *genTrace)
                                                floatADC.begin() + maxAdcIdx + energy_integral[1], 0) /
                                   (energy_integral[1] - energy_integral[0]) -
                                baseline);
-   if (saturation) { //fit the good part of the trace to extrapolate the peak
+   if (saturation && fitClipped) { //fit the good part of the trace to extrapolate the peak
      //using a TGraph and a TF1 now because it's an easy interaface. May well be a more efficent way to go about this 
      TGraph gr;
      int n = 0;

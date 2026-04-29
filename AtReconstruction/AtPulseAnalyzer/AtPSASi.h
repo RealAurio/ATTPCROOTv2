@@ -28,6 +28,7 @@ private:
    int low_bl_region[2];
    int hi_bl_region[2];
    int energy_integral[2];
+   Bool_t fitClipped{false};
 
 public:
    AtPSASi();
@@ -40,6 +41,7 @@ public:
    void SetLowBLRegion(int low, int hi);
    void SetHighBLRegion(int low, int hi);
    void SetEnergyIntegral(int low, int hi);
+   void SetFitClipped(bool fit);
 
 private:
    bool shouldSaveHit(double charge, double threshold, int tb);
