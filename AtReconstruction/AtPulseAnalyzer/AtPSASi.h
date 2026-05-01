@@ -25,10 +25,13 @@ class AtPSASi : public AtPSA {
 private:
    Bool_t fIsTimeCorr{false};
    Bool_t fPositivePolarity{true};
-   int low_bl_region[2];
-   int hi_bl_region[2];
-   int energy_integral[2];
-   Bool_t fitClipped{false};
+   int fLowBLRegion[2];
+   int fHighBLRegion[2];
+   int fEnergyIntegral[2];
+   int fMinIndx{5};
+   Bool_t fFitClipped{false};
+   Bool_t fOverflowReconstruction{true};
+   Bool_t fDumpTraces{false};
 
 public:
    AtPSASi();
@@ -42,6 +45,8 @@ public:
    void SetHighBLRegion(int low, int hi);
    void SetEnergyIntegral(int low, int hi);
    void SetFitClipped(bool fit);
+   void SetOverflowReconstruction(bool overflow);
+   void SetDumpTraces(bool dump);
 
 private:
    bool shouldSaveHit(double charge, double threshold, int tb);
