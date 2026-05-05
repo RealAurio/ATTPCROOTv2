@@ -89,6 +89,11 @@ public:
       swap(first.fMultiplicityBack1, second.fMultiplicityBack1);
       swap(first.fMultiplicityFront2, second.fMultiplicityFront2);
       swap(first.fMultiplicityBack2, second.fMultiplicityBack2);
+
+      swap(first.fTimeFront1, second.fTimeFront1);
+      swap(first.fTimeBack1,  second.fTimeBack1);
+      swap(first.fTimeFront2, second.fTimeFront2);
+      swap(first.fTimeBack2,  second.fTimeBack2);
    }
 
    void Clear(Option_t *opt = nullptr) override;

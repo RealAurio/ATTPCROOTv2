@@ -1,8 +1,8 @@
 /*********************************************************************
- *   ATSI Mapping Class	AtSiMap.h			             *
- *   Author: Y. Ayyad            				     *
- *   Log: 13-02-2015 17:16 JST					     *
- *								     *
+ *   ATGAGG Mapping Class	AtGAGGMap.h		  	                         *
+ *   Author: T. J. Gray            				                           *
+ *   Log: 05-05-2026                                   					     *
+ *								                                                   *
  *********************************************************************/
 
 #ifndef ATGAGGMAP_H
@@ -31,6 +31,8 @@ public:
    virtual void ParseAtTPCMap(TXMLNode *node) override;
 
    Int_t InhibitStrips(TString stripsFilePath);
+
+   std::unordered_map<AtPadReference, int> fLayerMap;
 
    ClassDefOverride(AtGAGGMap, 1);
 

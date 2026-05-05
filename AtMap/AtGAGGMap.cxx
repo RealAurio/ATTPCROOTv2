@@ -1,8 +1,8 @@
 /*********************************************************************
- *   ATSI Mapping Class	AtGAGGMap.cxx			             *
- *   Author: Y. Ayyad            				     *
- *   Log: 13-02-2015 17:16 JST					     *
- *								     *
+ *   ATGAGG Mapping Class	AtGAGGMap.cxx			                         *
+ *   Author: T. J. Gray            				                           *
+ *   Log: 05-05-2026                                   					     *
+ *								                                                   *
  *********************************************************************/
 
 #include "AtGAGGMap.h"
@@ -41,11 +41,11 @@ constexpr auto cNORMAL = "\033[0m";
 
 AtGAGGMap::AtGAGGMap() : AtMap()
 {
-   AtPadCoord.resize(boost::extents[10240][3][2]);
+   AtPadCoord.resize(boost::extents[40][3][2]);
    std::fill(AtPadCoord.data(), AtPadCoord.data() + AtPadCoord.num_elements(), 0);
    std::cout << " ATGAGG Map initialized " << std::endl;
    std::cout << " ATGAGG Pad Coordinates container initialized " << std::endl;
-   fNumberPads = 25;
+   fNumberPads = 40;
 }
 
 AtGAGGMap::~AtGAGGMap() = default;
@@ -75,6 +75,7 @@ void AtGAGGMap::ParseAtTPCMap(TXMLNode *node)
    Int_t fDigitizerID = -1000;
    Int_t fChannelID = -1000;
    Int_t fGAGGID = -1000;
+   Int_t fLayerID = -1000;
 
    for (; node; node = node->GetNextNode()) {
       if (node->GetNodeType() == TXMLNode::kXMLElementNode) { // Element Node
@@ -82,14 +83,17 @@ void AtGAGGMap::ParseAtTPCMap(TXMLNode *node)
             fDigitizerID = atoi(node->GetText());
          if (strcmp(node->GetNodeName(), "ChannelID") == 0)
             fChannelID = atoi(node->GetText());
+         if (strcmp(node->GetNodeName(), "LayerID") == 0)
+            fLayerID = atoi(node->GetText());
          if (strcmp(node->GetNodeName(), "GAGGID") == 0)
             fGAGGID = atoi(node->GetText());
       }
    }
    AtPadReference ref = {fDigitizerID, 0, 0, fChannelID};
    std::cout << "loading GAGGMap XML: " << fDigitizerID << "." << 0 << "." << 0 << "." << fChannelID << ": "
-             << fGAGGID << std::endl;
+             << "GAGGID = " << fGAGGID << ", LayerID = " << fLayerID << std::endl;
    fPadMap.insert(std::pair<AtPadReference, int>(ref, fGAGGID));
+   fLayerMap.insert(std::pair<AtPadReference, int>(ref, fLayerID));
 
    fPadMapInverse.insert(std::pair<int, AtPadReference>(fGAGGID, ref));
 }
