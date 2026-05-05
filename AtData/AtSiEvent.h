@@ -71,9 +71,9 @@ public:
       swap(first.fEBack2, second.fEBack2);
 
       swap(first.fTSFront1, second.fTSFront1);
-      swap(first.fTSBack1,  second.fTSBack1);
+      swap(first.fTSBack1, second.fTSBack1);
       swap(first.fTSFront2, second.fTSFront2);
-      swap(first.fTSBack2,  second.fTSBack2);
+      swap(first.fTSBack2, second.fTSBack2);
 
       swap(first.fADCMaxFront1, second.fADCMaxFront1);
       swap(first.fADCMaxBack1, second.fADCMaxBack1);
@@ -91,9 +91,9 @@ public:
       swap(first.fMultiplicityBack2, second.fMultiplicityBack2);
 
       swap(first.fTimeFront1, second.fTimeFront1);
-      swap(first.fTimeBack1,  second.fTimeBack1);
+      swap(first.fTimeBack1, second.fTimeBack1);
       swap(first.fTimeFront2, second.fTimeFront2);
-      swap(first.fTimeBack2,  second.fTimeBack2);
+      swap(first.fTimeBack2, second.fTimeBack2);
    }
 
    void Clear(Option_t *opt = nullptr) override;
@@ -156,7 +156,7 @@ public:
    Int_t GetTimeFront1() { return fTimeFront1; }
    Int_t GetTimeFront2() { return fTimeFront2; }
    Int_t GetTimeBack1() { return fTimeBack1; }
-  Int_t GetTimeBack2() { return fTimeBack2; }
+   Int_t GetTimeBack2() { return fTimeBack2; }
 
    Double_t GetEnergyFront1() { return fEnergyFront1; }
    Double_t GetEnergyFront2() { return fEnergyFront2; }

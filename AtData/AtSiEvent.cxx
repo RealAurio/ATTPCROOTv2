@@ -13,8 +13,9 @@ AtSiEvent::AtSiEvent() : AtBaseEvent("AtSiEvent") {}
 
 AtSiEvent::AtSiEvent(const AtSiEvent &copy)
    : AtBaseEvent(copy), fMultiplicityFront1(copy.fMultiplicityFront1), fMultiplicityBack1(copy.fMultiplicityBack1),
-     fMultiplicityFront2(copy.fMultiplicityFront2), fMultiplicityBack2(copy.fMultiplicityBack2), fTimeFront1(copy.fTimeFront1),
-     fTimeFront2(copy.fTimeFront2), fTimeBack1(copy.fTimeBack1), fTimeBack2(copy.fTimeBack2)
+     fMultiplicityFront2(copy.fMultiplicityFront2), fMultiplicityBack2(copy.fMultiplicityBack2),
+     fTimeFront1(copy.fTimeFront1), fTimeFront2(copy.fTimeFront2), fTimeBack1(copy.fTimeBack1),
+     fTimeBack2(copy.fTimeBack2)
 {
    for (int i = 0; i < 4; i++) {
       fEFront1[i] = copy.fEFront1[i];

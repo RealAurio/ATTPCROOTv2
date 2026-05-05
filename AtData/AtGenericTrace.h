@@ -33,7 +33,7 @@ protected:
 public:
    virtual std::unique_ptr<AtPadBase> Clone() const override;
 
-   AtGenericTrace(Int_t traceID = -1, std::size_t size = 2048, std::string na="");
+   AtGenericTrace(Int_t traceID = -1, std::size_t size = 2048, std::string na = "");
 
    void SetRawADC(Int_t idx, Int_t val) { fRawAdc[idx] = val; }
    void SetADC(Int_t idx, Double_t val) { fAdc[idx] = val; }

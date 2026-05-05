@@ -23,7 +23,7 @@ AtGaggTask::AtGaggTask(std::unique_ptr<AtPSASi> psa)
    : fInputBranchName("AtRawEvent"), fOutputBranchName("AtGaggEvent"), fGaggEventArray(TClonesArray("AtGaggEvent", 1)),
      fPSA(std::move(psa)), fIsPersistence(kFALSE)
 {
-  fGaggMap = std::make_unique<AtGAGGMap>();
+   fGaggMap = std::make_unique<AtGAGGMap>();
 }
 
 AtGaggTask::AtGaggTask(std::unique_ptr<AtPSASi> psa, std::unique_ptr<AtGAGGMap> gaggmap)
@@ -95,7 +95,7 @@ void AtGaggTask::Exec(Option_t *opt)
    int idx2{};
    for (auto &genTrace : genTraces) {
 
-      AtPadReference padRef = {std::atoi(genTrace->GetName().c_str()),0,0,genTrace->GetTraceID()};
+      AtPadReference padRef = {std::atoi(genTrace->GetName().c_str()), 0, 0, genTrace->GetTraceID()};
       int GaggID = fGaggMap->GetPadNum(padRef);
       auto pseudoHits = fPSA->AnalyzeGenTrace(genTrace.get());
       double traceCharge{};

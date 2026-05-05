@@ -1,8 +1,8 @@
 #ifndef AtGAGGTASK_H
 #define AtGAGGTASK_H
 
-#include "AtPSASi.h"
 #include "AtGAGGMap.h"
+#include "AtPSASi.h"
 
 #include <FairTask.h>
 
