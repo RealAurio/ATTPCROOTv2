@@ -67,9 +67,7 @@ protected:
    double fKineticEnergyCurrent{-1};                      // [MeV] KE of ion.
    double fPx{-999}, fPy{-999}, fPz{-999};                // [MeV] Momentum of ion.
 
-   // MAYBE NOT USED/NEEDED.
-   double fVertexX{-999}, fVertexY{-999}, fVertexZ{-999}; // [cm] Vertex coordinates.
-
+   // Adding ion logic and vertex propagator configuration.
    bool IonAlreadyExists(TString ionName);
    bool AddIonToFairRunSim();
    void ConfigureVertexPropagator();

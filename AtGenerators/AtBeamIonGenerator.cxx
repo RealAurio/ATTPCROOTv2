@@ -103,9 +103,6 @@ void AtBeamIonGenerator::ConfigureVertexPropagator()
 {
    // TO-DO: ADD MORE CONFIGURATION OPTIONS.
    AtVertexPropagator::Instance()->SetBeamMass(fIon->GetMass() + fIon->GetExcEnergy());
-
-   // NOT SURE WHAT THIS WOULD BE USED FOR!
-   // AtVertexPropagator::Instance()->SetBeamNomE(ener);
 }
 
 void AtBeamIonGenerator::SetBeamSource(double z, double x, double y)
