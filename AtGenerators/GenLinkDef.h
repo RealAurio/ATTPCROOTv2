@@ -35,4 +35,7 @@
 #pragma link C++ class AtTPC20MgDecay + ;
 #pragma link C++ class AtTPC20MgDecay_pag + ;
 
+// New generators
+#pragma link C++ class AtBeamIonGenerator + ;
+
 #endif

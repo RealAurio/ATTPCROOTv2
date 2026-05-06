@@ -29,6 +29,8 @@ AtTPCGammaDummyGenerator.cxx
 AtTPC20MgDecay.cxx
 AtTPC20MgDecay_pag.cxx
 
+# New generators
+AtBeamIonGenerator.cxx
 )
 
 set(DEPENDENCIES
