@@ -53,6 +53,11 @@ AtBeamIonGenerator::AtBeamIonGenerator(TString ionName, int pdgCode, double kine
    }
    LOG(info) << "Using the already defined " << ionName.Data() << " ion as requested.";
 
+   fZ = fIon->GetZ();
+   fA = fIon->GetA();
+   fChargeState = fIon->GetQ();
+   fMass = fIon->GetMass() * 1000;
+   fEx = fIon->GetExcEnergy() * 1000;
    fPDGCode = pdgCode;
 
    ConfigureVertexPropagator();
